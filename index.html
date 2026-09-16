@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清閒小築 - 班級經營小天地</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;900&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // 提前於 head 定義備援函式，確保圖片在解析觸發 onerror 時立即可用
+        window.handleImgFallback = function(img) {
+            img.onerror = null;
+            // 採用純 SVG 向量繪圖作為內建預設主圖，完美契合「清閒老師與知光引導者 Lumi」意象
+            img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+                    <defs>
+                        <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#1e293b"/>
+                            <stop offset="100%" stop-color="#090d16"/>
+                        </radialGradient>
+                        <radialGradient id="lumiGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#fef08a"/>
+                            <stop offset="65%" stop-color="#f59e0b"/>
+                            <stop offset="100%" stop-color="#d97706"/>
+                        </radialGradient>
+                    </defs>
+                    <rect width="400" height="400" fill="url(#bgGlow)"/>
+                    <!-- Ambient Stars -->
+                    <circle cx="65" cy="75" r="2" fill="#fbbf24" opacity="0.8"/>
+                    <circle cx="335" cy="65" r="2.5" fill="#60a5fa" opacity="0.8"/>
+                    <circle cx="85" cy="275" r="1.5" fill="#fbbf24" opacity="0.6"/>
+                    <circle cx="315" cy="285" r="2" fill="#fbbf24" opacity="0.7"/>
+                    <!-- Orbit Ring -->
+                    <ellipse cx="200" cy="200" rx="165" ry="55" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.4" transform="rotate(-15 200 200)"/>
+                    
+                    <!-- Teacher Character -->
+                    <g transform="translate(135, 60)">
+                        <!-- Hair -->
+                        <path d="M 22 65 C 10 25, 50 2, 80 10 C 110 18, 125 40, 112 68 Z" fill="#1e293b"/>
+                        <!-- Head -->
+                        <ellipse cx="68" cy="75" rx="42" ry="40" fill="#fed7aa"/>
+                        <!-- Glasses -->
+                        <rect x="38" y="65" width="25" height="19" rx="5" fill="none" stroke="#0f172a" stroke-width="3"/>
+                        <rect x="73" y="65" width="25" height="19" rx="5" fill="none" stroke="#0f172a" stroke-width="3"/>
+                        <line x1="63" y1="74" x2="73" y2="74" stroke="#0f172a" stroke-width="3"/>
+                        <!-- Eyes & Smile -->
+                        <circle cx="50" cy="74" r="3.5" fill="#0f172a"/>
+                        <circle cx="85" cy="74" r="3.5" fill="#0f172a"/>
+                        <path d="M 60 88 Q 68 96 76 88" fill="none" stroke="#c2410c" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Body / Blue Shirt -->
+                        <path d="M 26 122 C 38 112, 98 112, 110 122 L 132 205 L 4 205 Z" fill="#2563eb"/>
+                        <path d="M 68 114 L 68 145" stroke="#1d4ed8" stroke-width="2.5"/>
+                    </g>
+
+                    <!-- Lumi Mascot Character -->
+                    <g transform="translate(255, 230)">
+                        <circle cx="45" cy="45" r="32" fill="url(#lumiGlow)"/>
+                        <!-- Graduation Cap -->
+                        <polygon points="45,10 15,22 45,34 75,22" fill="#1e3a8a"/>
+                        <rect x="35" y="26" width="20" height="7" fill="#1d4ed8" rx="2"/>
+                        <line x1="75" y1="22" x2="80" y2="35" stroke="#fbbf24" stroke-width="2"/>
+                        <!-- Lumi Eyes & Smile -->
+                        <circle cx="36" cy="45" r="4" fill="#0f172a"/>
+                        <circle cx="54" cy="45" r="4" fill="#0f172a"/>
+                        <circle cx="38" cy="43" r="1.5" fill="#ffffff"/>
+                        <circle cx="56" cy="43" r="1.5" fill="#ffffff"/>
+                        <path d="M 40 55 Q 45 60 50 55" fill="none" stroke="#78350f" stroke-width="2" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Motto Label Badge -->
+                    <rect x="50" y="325" width="300" height="42" rx="14" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" opacity="0.95"/>
+                    <text x="200" y="351" fill="#fef08a" font-family="'Noto Sans TC', sans-serif" font-size="13" font-weight="bold" text-anchor="middle">清閒老師 ✦ 知光引導者 Lumi</text>
+                </svg>
+            `);
+        };
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        gold: {
+                            light: '#FEF08A',
+                            DEFAULT: '#F59E0B',
+                            glow: '#FBBF24',
+                            deep: '#B45309'
+                        },
+                        night: {
+                            800: '#0F172A',
+                            900: '#090D16',
+                            card: '#162033',
+                            border: '#1E2E48'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'Outfit', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow-gold': '0 0 25px -5px rgba(245, 158, 11, 0.45)',
+                        'glow-blue': '0 0 25px -5px rgba(59, 130, 246, 0.45)',
+                        'hologram': '0 0 30px rgba(251, 191, 36, 0.25), inset 0 0 15px rgba(251, 191, 36, 0.15)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Ambient Lighting and Pulsing Orbits */
+        @keyframes orbitFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6)); }
+            50% { opacity: 1; filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.9)); }
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-orbit { animation: orbitFloat 5s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+        .animate-float { animation: floatSlow 4s ease-in-out infinite; }
+        .animate-spin-slow { animation: spinSlow 30s linear infinite; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090D16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E2E48;
+            border-radius: 9999px;
+            border: 2px solid #090D16;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #F59E0B;
+        }
+
+        /* Holographic Text Outline */
+        .holo-text-gold {
+            text-shadow: 0 0 12px rgba(245, 158, 11, 0.8), 0 0 24px rgba(245, 158, 11, 0.4);
+        }
+        .holo-border {
+            border-image: linear-gradient(to bottom right, #FBBF24, rgba(245, 158, 11, 0.2), #60A5FA) 1;
+        }
+    </style>
+</head>
+<body class="bg-night-900 text-slate-100 min-h-screen font-sans selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden">
+
+    <!-- Background Canvas for Warm Night Star Dust and Light Particles -->
+    <canvas id="ambientCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Warm Courtyard Light String Background Overlay -->
+    <div class="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/15 via-night-900/60 to-night-900"></div>
+
+    <!-- Main Container -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+
+        <!-- Navigation Bar -->
+        <header class="sticky top-0 z-40 backdrop-blur-md bg-night-900/80 border-b border-night-border transition-all">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex items-center justify-between">
+                <!-- Logo & Mascot Identity -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-blue-600 p-[2px] shadow-glow-gold flex-shrink-0">
+                        <div class="w-full h-full bg-night-900 rounded-[14px] flex items-center justify-center overflow-hidden">
+                            <span class="text-2xl">🌱</span>
+                        </div>
+                        <span class="absolute -bottom-1 -right-1 flex h-3.5 w-3.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500"></span>
+                        </span>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-amber-300 via-amber-100 to-sky-300 bg-clip-text text-transparent">
+                                清閒小築
+                            </h1>
+                            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">班級經營小天地</span>
+                        </div>
+                        <p class="text-xs text-slate-400 hidden sm:block">智慧陪伴 ‧ 自主探索 ‧ 溫暖引導</p>
+                    </div>
+                </div>
+
+                <!-- Center Quick Badge (Visual Motto) -->
+                <div class="hidden lg:flex items-center space-x-6 text-sm text-slate-300">
+                    <div class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-amber-950/40 border border-amber-500/30">
+                        <span class="text-amber-400 text-xs">✨</span>
+                        <span class="text-xs text-amber-200 font-medium">讓學習變簡單，讓知識變有感</span>
+                    </div>
+                </div>
+
+                <!-- Right Action Buttons -->
+                <div class="flex items-center space-x-3">
+                    <button id="searchTriggerBtn" onclick="toggleSearch()" class="p-2.5 rounded-xl bg-night-card border border-night-border text-slate-300 hover:text-amber-400 hover:border-amber-500/40 transition-all shadow-sm">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <!-- Admin Login / Portal Entrance Button -->
+                    <button id="adminLoginBtn" onclick="openAdminModal()" class="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-slate-800 to-night-card border border-slate-700 hover:border-amber-400/60 text-slate-200 hover:text-amber-300 transition-all text-xs font-medium shadow-sm hover:shadow-glow-gold">
+                        <i class="fa-solid fa-shield-halved text-amber-400"></i>
+                        <span id="adminBtnText">管理後台</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Dropdown Bar -->
+            <div id="searchDropdown" class="hidden border-t border-night-border bg-night-800/95 px-4 py-3">
+                <div class="max-w-3xl mx-auto flex items-center space-x-3">
+                    <i class="fa-solid fa-search text-amber-400"></i>
+                    <input type="text" id="globalSearchInput" placeholder="搜尋班級網頁、學習資源、活動通知..." oninput="handleSearch(this.value)" class="w-full bg-transparent text-sm text-slate-100 placeholder-slate-400 focus:outline-none">
+                    <button onclick="clearSearch()" class="text-xs text-slate-400 hover:text-slate-200">清除</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section: Featuring the Visual Character & Lumi Companion -->
+        <section class="relative py-8 md:py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- Left: Interactive Character Showcase & Hologram Portal -->
+                <div class="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left relative">
+                    <!-- Warm ambient orb behind character -->
+                    <div class="absolute -top-12 -left-12 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -bottom-10 right-0 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <!-- Welcome Badge -->
+                    <div class="inline-flex items-center space-x-2.5 px-4 py-1.5 rounded-full bg-slate-800/80 border border-amber-400/30 text-amber-300 text-xs font-medium mb-4 shadow-sm animate-pulse-glow">
+                        <span class="flex h-2 w-2 rounded-full bg-amber-400"></span>
+                        <span>班導師之窗 ‧ 清閒小築數位基地</span>
+                    </div>
+
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight mb-4">
+                        探索知識之光，<br class="hidden sm:inline">
+                        <span class="bg-gradient-to-r from-amber-300 via-yellow-200 to-sky-400 bg-clip-text text-transparent">
+                            點亮學習的每一步
+                        </span>
+                    </h2>
+
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl mb-6 font-light">
+                        歡迎來到清閒老師與智慧小精靈 <strong>Lumi（知光引導者）</strong> 的班級天地！這裡匯聚了班級各項學習網站、日常管理規章、自主探索利器與家長溝通橋樑，讓我們攜手並進。
+                    </p>
+
+                    <!-- Holographic Golden Inscription Board (Inspired by the Image) -->
+                    <div class="w-full max-w-md p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-950/40 via-night-card/90 to-night-800 border border-amber-400/40 shadow-glow-gold relative overflow-hidden backdrop-blur-md mb-6">
+                        <!-- Holographic corner stars -->
+                        <div class="absolute top-2 left-2 text-amber-400/40 text-xs">✦</div>
+                        <div class="absolute top-2 right-2 text-amber-400/40 text-xs">✦</div>
+                        <div class="absolute bottom-2 left-2 text-amber-400/40 text-xs">✦</div>
+                        <div class="absolute bottom-2 right-2 text-amber-400/40 text-xs">✦</div>
+
+                        <div class="text-center py-1">
+                            <p class="text-xs uppercase tracking-widest text-amber-400/80 font-semibold mb-1">班級教育核心理念</p>
+                            <h3 class="text-lg sm:text-xl font-bold text-amber-200 holo-text-gold tracking-wide">
+                                「讓學習變簡單，讓知識變有感」
+                            </h3>
+                        </div>
+
+                        <!-- 3 Tier Pedestal Icons -->
+                        <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-amber-400/20 text-center">
+                            <div class="p-1.5 rounded-lg bg-slate-900/60 border border-amber-400/20">
+                                <span class="text-xs font-semibold text-amber-300">理解</span>
+                                <p class="text-[10px] text-slate-400">掌握關鍵架構</p>
+                            </div>
+                            <div class="p-1.5 rounded-lg bg-slate-900/60 border border-amber-400/20">
+                                <span class="text-xs font-semibold text-sky-300">創意</span>
+                                <p class="text-[10px] text-slate-400">啟發靈感火花</p>
+                            </div>
+                            <div class="p-1.5 rounded-lg bg-slate-900/60 border border-amber-400/20">
+                                <span class="text-xs font-semibold text-purple-300">表達</span>
+                                <p class="text-[10px] text-slate-400">勇敢自信發聲</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats Pill -->
+                    <div class="flex flex-wrap gap-4 text-xs text-slate-300 justify-center lg:justify-start">
+                        <div class="flex items-center space-x-2 bg-slate-800/60 px-3 py-1.5 rounded-lg border border-slate-700">
+                            <i class="fa-solid fa-folder-tree text-amber-400"></i>
+                            <span id="statCategoryCount">4 大專屬主題</span>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-slate-800/60 px-3 py-1.5 rounded-lg border border-slate-700">
+                            <i class="fa-solid fa-link text-sky-400"></i>
+                            <span id="statTotalLinks">12 個整合平台</span>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-slate-800/60 px-3 py-1.5 rounded-lg border border-slate-700">
+                            <i class="fa-solid fa-sparkles text-yellow-300"></i>
+                            <span>每日持續更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Visual Portrait Card with 4 Holographic Orbit Badges -->
+                <div class="lg:col-span-6 flex justify-center relative">
+                    <!-- Glow Container -->
+                    <div class="relative w-full max-w-lg aspect-square sm:aspect-[4/3] lg:aspect-square flex items-center justify-center">
+                        
+                        <!-- Golden Circular Hologram Orbit Track -->
+                        <div class="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full border border-dashed border-amber-400/30 animate-spin-slow pointer-events-none"></div>
+                        <div class="absolute w-60 h-60 sm:w-80 sm:h-80 rounded-full border border-sky-400/20 pointer-events-none"></div>
+
+                        <!-- Main Character Display Frame (Portrait with Golden Halo) -->
+                        <div class="relative z-10 w-64 sm:w-80 rounded-3xl p-1 bg-gradient-to-b from-amber-400 via-amber-600/40 to-night-border shadow-2xl shadow-amber-500/25 group">
+                            <div class="relative w-full bg-gradient-to-b from-slate-900 via-night-800 to-night-900 rounded-[22px] overflow-hidden p-3 flex flex-col items-center">
+                                
+                                <!-- Visual Illustration Component (Actual 3D Chibi Teacher & Lumi Image) -->
+                                <div class="relative w-full aspect-square rounded-2xl overflow-hidden border border-amber-400/30 bg-night-900 shadow-inner group-hover:border-amber-400/70 transition-all">
+                                    <img 
+                                        id="heroCharacterImg"
+                                        src="FE07B33B-4011-4858-A850-4F0417FFFBE5.PNG" 
+                                        alt="清閒老師與知光引導者 Lumi" 
+                                        onerror="handleImgFallback(this)"
+                                        class="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-105"
+                                    >
+                                    <div class="absolute inset-0 bg-gradient-to-t from-night-900/80 via-transparent to-transparent pointer-events-none"></div>
+                                    
+                                    <!-- Image Change Floating Button (Accessible via hover or Admin mode) -->
+                                    <div class="absolute bottom-2 right-2 flex items-center space-x-1.5 z-20">
+                                        <label class="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-slate-900/85 hover:bg-amber-500 hover:text-slate-950 text-amber-300 text-[11px] font-semibold border border-amber-400/40 backdrop-blur-md cursor-pointer transition-all shadow-md active:scale-95" title="更換主視覺圖片">
+                                            <i class="fa-solid fa-camera text-xs"></i>
+                                            <span class="hidden sm:inline">更換圖片</span>
+                                            <input type="file" accept="image/*" class="hidden" onchange="uploadHeroImage(event)">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Caption in Card -->
+                                <div class="mt-2.5 text-center">
+                                    <h4 class="text-sm font-bold text-slate-100 flex items-center justify-center space-x-1.5">
+                                        <span>清閒老師</span>
+                                        <span class="text-amber-400 text-xs">✦</span>
+                                        <span>小精靈 Lumi</span>
+                                    </h4>
+                                    <p class="text-[11px] text-amber-300/80">知光引導者 ‧ 陪伴孩子快樂自學</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4 Floating Feature Orbs (Extracted from User's Image) -->
+                        
+                        <!-- 1. 靈感生成 (Lightbulb Top-Left) -->
+                        <div class="absolute -top-3 sm:top-2 -left-2 sm:left-4 z-20 animate-orbit">
+                            <div class="p-3 rounded-2xl bg-night-card/90 border border-amber-400/50 shadow-glow-gold flex items-center space-x-2 backdrop-blur-md cursor-pointer hover:scale-105 transition-transform" onclick="filterByTag('靈感生成')">
+                                <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm shadow-inner">
+                                    <i class="fa-regular fa-lightbulb"></i>
+                                </div>
+                                <div class="text-left pr-1">
+                                    <span class="text-[10px] uppercase text-amber-400/80 block font-bold">Inspiration</span>
+                                    <span class="text-xs font-bold text-slate-100">靈感生成</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. 光之引導 (Notebook Top-Right) -->
+                        <div class="absolute -top-3 sm:top-4 -right-2 sm:right-4 z-20 animate-orbit" style="animation-delay: -1.5s;">
+                            <div class="p-3 rounded-2xl bg-night-card/90 border border-sky-400/50 shadow-glow-blue flex items-center space-x-2 backdrop-blur-md cursor-pointer hover:scale-105 transition-transform" onclick="filterByTag('光之引導')">
+                                <div class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center text-sm shadow-inner">
+                                    <i class="fa-solid fa-compass"></i>
+                                </div>
+                                <div class="text-left pr-1">
+                                    <span class="text-[10px] uppercase text-sky-400/80 block font-bold">Guidance</span>
+                                    <span class="text-xs font-bold text-slate-100">光之引導</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. 知識轉化 (Book Mid-Left) -->
+                        <div class="absolute bottom-6 -left-3 sm:left-2 z-20 animate-orbit" style="animation-delay: -3s;">
+                            <div class="p-3 rounded-2xl bg-night-card/90 border border-amber-400/50 shadow-glow-gold flex items-center space-x-2 backdrop-blur-md cursor-pointer hover:scale-105 transition-transform" onclick="filterByTag('知識轉化')">
+                                <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm shadow-inner">
+                                    <i class="fa-solid fa-book-bookmark"></i>
+                                </div>
+                                <div class="text-left pr-1">
+                                    <span class="text-[10px] uppercase text-amber-400/80 block font-bold">Transfer</span>
+                                    <span class="text-xs font-bold text-slate-100">知識轉化</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. 創意表達 / 成果手稿 (Document Mid-Right) -->
+                        <div class="absolute bottom-4 -right-3 sm:right-2 z-20 animate-orbit" style="animation-delay: -2.2s;">
+                            <div class="p-3 rounded-2xl bg-night-card/90 border border-purple-400/50 shadow-sm flex items-center space-x-2 backdrop-blur-md cursor-pointer hover:scale-105 transition-transform" onclick="filterByTag('創意表達')">
+                                <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-sm shadow-inner">
+                                    <i class="fa-solid fa-pen-nib"></i>
+                                </div>
+                                <div class="text-left pr-1">
+                                    <span class="text-[10px] uppercase text-purple-400/80 block font-bold">Expression</span>
+                                    <span class="text-xs font-bold text-slate-100">創意表達</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Classroom Live Bulletin / Ticker -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mb-8">
+            <div class="p-3 sm:p-4 rounded-2xl bg-night-card/80 border border-amber-500/30 flex items-center space-x-3 shadow-md backdrop-blur-sm">
+                <div class="flex-shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-slate-950 font-bold text-sm shadow-glow-gold">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div class="overflow-hidden flex-1">
+                    <div id="bulletinText" class="text-xs sm:text-sm text-amber-100 font-medium truncate">
+                        🌟 歡迎來到清閒小築！本週重點：數位學習歷程上傳、晨光閱讀星光分享會已啟動，請點選專區查看各項資訊。
+                    </div>
+                </div>
+                <span class="text-[11px] text-amber-400/80 px-2 py-1 bg-amber-500/10 rounded-md border border-amber-500/20 whitespace-nowrap hidden sm:inline-block">
+                    導師即時公告
+                </span>
+            </div>
+        </section>
+
+        <!-- Main Hub Content Section -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 w-full pb-16">
+            
+            <!-- Category Tabs & Management Quick Bar -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-4 border-b border-night-border">
+                
+                <!-- Category Filter Pills -->
+                <div class="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none" id="categoryFilterContainer">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Right Side Filter count / Admin Quick Add (if logged in) -->
+                <div class="flex items-center space-x-3 self-end md:self-auto">
+                    <div id="adminActionGroup" class="hidden items-center space-x-2">
+                        <button onclick="openAddModal()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all shadow-glow-gold">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>新增網頁</span>
+                        </button>
+                        <button onclick="adminLogout()" class="px-2.5 py-1.5 rounded-xl bg-red-950/40 border border-red-500/30 text-red-300 hover:bg-red-900/60 text-xs font-medium transition-all" title="登出後台">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </button>
+                    </div>
+                    <span id="activeCountBadge" class="text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
+                        顯示中：12 個站點
+                    </span>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-16 px-4">
+                <div class="w-16 h-16 rounded-full bg-slate-800/80 text-amber-400 flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/30">
+                    <i class="fa-regular fa-folder-open"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-200 mb-1">找不到相關網頁資源</h3>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto mb-4">請嘗試清除搜尋條件，或至管理後台新增所屬的班級經營網頁。</p>
+                <button onclick="clearSearch()" class="px-4 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold hover:bg-amber-500/30 transition-all">
+                    重設所有篩選
+                </button>
+            </div>
+
+            <!-- Web Pages Card Grid -->
+            <div id="webCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Populated via JavaScript renderWebCards() -->
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-night-border bg-night-950/90 py-8 px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-400">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-amber-400 font-bold">清閒小築</span>
+                    <span>‧ 班級經營小天地</span>
+                    <span class="text-slate-600">|</span>
+                    <span class="text-slate-400">「讓學習變簡單，讓知識變有感」</span>
+                </div>
+                <div class="flex items-center space-x-4 text-slate-400">
+                    <span>知光引導者 LUMI 專屬設計</span>
+                    <button onclick="openAdminModal()" class="text-slate-500 hover:text-amber-400 transition-colors">
+                        <i class="fa-solid fa-lock text-[10px]"></i> 管理員驗證
+                    </button>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Admin Login Modal (Zero Prompts / Hints) -->
+    <div id="adminAuthModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+        <div class="relative w-full max-w-sm rounded-3xl bg-gradient-to-b from-night-card to-night-900 border border-amber-500/40 p-6 shadow-2xl shadow-amber-500/20 transform scale-95 transition-transform duration-200" id="adminAuthModalContent">
+            
+            <!-- Close Button -->
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center bg-slate-800/60">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Mascot Header -->
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/40 text-amber-400 mx-auto flex items-center justify-center text-2xl mb-3 shadow-glow-gold">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-100">管理後台驗證</h3>
+                <p class="text-xs text-slate-400 mt-1">請輸入身分識別金鑰以解鎖管理權限</p>
+            </div>
+
+            <!-- Password Form without hints -->
+            <form onsubmit="handleAdminAuth(event)" class="space-y-4">
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        id="adminPasswordInput" 
+                        placeholder="請輸入管理密碼" 
+                        required 
+                        autocomplete="off"
+                        class="w-full px-4 py-3 rounded-xl bg-night-900 border border-night-border text-slate-100 text-sm placeholder-slate-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
+                    >
+                    <button type="button" onclick="togglePasswordVisibility('adminPasswordInput')" class="absolute right-3 top-3.5 text-slate-400 hover:text-slate-200">
+                        <i class="fa-regular fa-eye" id="toggleEyeIcon"></i>
+                    </button>
+                </div>
+
+                <div id="authErrorMsg" class="hidden text-xs text-rose-400 text-center font-medium bg-rose-950/40 border border-rose-800/50 py-1.5 rounded-lg">
+                    驗證失敗，密碼錯誤。
+                </div>
+
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeAdminModal()" class="w-1/2 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-all">
+                        取消
+                    </button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-bold transition-all shadow-glow-gold">
+                        驗證登入
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add / Edit Web Resource Modal -->
+    <div id="itemModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+        <div class="relative w-full max-w-lg rounded-3xl bg-gradient-to-b from-night-card to-night-900 border border-amber-500/40 p-6 sm:p-7 shadow-2xl transform scale-95 transition-transform duration-200 max-h-[90vh] overflow-y-auto" id="itemModalContent">
+            
+            <button onclick="closeItemModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center bg-slate-800/60">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg border border-amber-500/30">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div>
+                    <h3 id="itemModalTitle" class="text-lg font-bold text-slate-100">新增班級網頁資源</h3>
+                    <p class="text-xs text-slate-400">自訂設定首頁展示卡片與專屬 Q 版意象圖</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleSaveItem(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="editItemId">
+
+                <!-- Title -->
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1.5">網頁 / 專區名稱 *</label>
+                    <input type="text" id="itemTitleInput" placeholder="例如：班級每日聯絡簿、數位自主歷程" required class="w-full px-3.5 py-2.5 rounded-xl bg-night-900 border border-night-border text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-400">
+                </div>
+
+                <!-- URL -->
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1.5">網址連結 (URL) *</label>
+                    <input type="text" id="itemUrlInput" placeholder="https://example.com 或 內部連結" required class="w-full px-3.5 py-2.5 rounded-xl bg-night-900 border border-night-border text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-400">
+                </div>
+
+                <!-- Category -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1.5">所屬分類 *</label>
+                        <select id="itemCategorySelect" class="w-full px-3 py-2.5 rounded-xl bg-night-900 border border-night-border text-slate-100 focus:outline-none focus:border-amber-400">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1.5">全息意象標籤 (Q圖代表)</label>
+                        <select id="itemTagSelect" class="w-full px-3 py-2.5 rounded-xl bg-night-900 border border-night-border text-slate-100 focus:outline-none focus:border-amber-400">
+                            <option value="光之引導">🧭 光之引導 (行政與常規)</option>
+                            <option value="知識轉化">📖 知識轉化 (學科與自學)</option>
+                            <option value="靈感生成">💡 靈感生成 (創意與活動)</option>
+                            <option value="創意表達">✍️ 創意表達 (成果與分享)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Q Icon Picker -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-slate-300 font-semibold">卡片專屬 Q 版圖示 * (<span id="iconTotalDisplay">60</span> 款挑選)</label>
+                        <input 
+                            type="text" 
+                            id="iconSearchInput" 
+                            placeholder="快速搜尋圖示..." 
+                            oninput="filterIconPicker(this.value)"
+                            class="px-2.5 py-1 text-[11px] rounded-lg bg-night-900 border border-night-border text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 w-36"
+                        >
+                    </div>
+                    <div class="grid grid-cols-5 sm:grid-cols-6 gap-2 max-h-48 overflow-y-auto p-2 bg-night-900/90 rounded-2xl border border-night-border" id="iconPickerContainer">
+                        <!-- 60 Icon selections dynamically rendered -->
+                    </div>
+                    <input type="hidden" id="selectedIcon" value="fa-compass">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1.5">內容說明簡述</label>
+                    <textarea id="itemDescInput" rows="2" placeholder="簡短介紹該網頁的功能與使用說明..." class="w-full px-3.5 py-2.5 rounded-xl bg-night-900 border border-night-border text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-400"></textarea>
+                </div>
+
+                <!-- Badge Label -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1.5">小徽章標籤 (選填)</label>
+                        <input type="text" id="itemBadgeInput" placeholder="例如：每日必看、推薦、熱門" class="w-full px-3.5 py-2 rounded-xl bg-night-900 border border-night-border text-slate-100 placeholder-slate-400 focus:outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1.5">開啟方式</label>
+                        <select id="itemTargetSelect" class="w-full px-3 py-2 rounded-xl bg-night-900 border border-night-border text-slate-100 focus:outline-none focus:border-amber-400">
+                            <option value="_blank">新分頁開啟 (_blank)</option>
+                            <option value="_self">當前頁面開啟 (_self)</option>
+                            <option value="modal">內嵌小視窗預覽</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-3 pt-4 border-t border-night-border">
+                    <button type="button" onclick="closeItemModal()" class="w-1/2 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition-all">
+                        取消
+                    </button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition-all shadow-glow-gold">
+                        儲存網頁設定
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Full Management Modal (Category, Data Export/Import, Bulletin Edit) -->
+    <div id="adminPanelModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+        <div class="relative w-full max-w-3xl rounded-3xl bg-night-card border border-amber-500/40 p-6 sm:p-8 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            
+            <button onclick="closeAdminPanel()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center bg-slate-800/60">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Panel Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-night-border">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg border border-amber-500/40">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-100">清閒小築 ‧ 後台主控台</h3>
+                        <p class="text-xs text-amber-300/80">導師管理模式啟用中</p>
+                    </div>
+                </div>
+                <button onclick="adminLogout()" class="text-xs text-red-400 hover:text-red-300 flex items-center space-x-1 mr-8">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>登出</span>
+                </button>
+            </div>
+
+            <!-- Panel Tabs & Content -->
+            <div class="overflow-y-auto flex-1 py-4 space-y-6 pr-1 text-xs">
+                
+                <!-- Hero Image Customization in Admin Panel -->
+                <div class="p-4 rounded-2xl bg-night-900 border border-amber-500/30">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="block font-bold text-slate-200 text-sm">
+                            <i class="fa-solid fa-image text-amber-400 mr-1.5"></i> 主視覺人物圖片設定
+                        </label>
+                        <button type="button" onclick="resetHeroImage()" class="text-xs text-amber-300/80 hover:text-amber-200 hover:underline">
+                            <i class="fa-solid fa-rotate-left mr-1"></i>重設為預設圖片
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
+                        <div>
+                            <label class="block text-slate-400 mb-1">從本機上傳新圖片：</label>
+                            <label class="w-full flex items-center justify-center space-x-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-night-border cursor-pointer transition-all">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span>選擇本機圖片檔案</span>
+                                <input type="file" accept="image/*" class="hidden" onchange="uploadHeroImage(event)">
+                            </label>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">或輸入外部圖片網址 (URL)：</label>
+                            <div class="flex space-x-1.5">
+                                <input type="text" id="heroUrlInput" placeholder="https://..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-night-border text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400">
+                                <button type="button" onclick="applyHeroUrl()" class="px-3 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-semibold whitespace-nowrap">
+                                    套用
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-400">支援 JPG、PNG、WEBP 等格式，系統會自動優化並留存在您的瀏覽器中。</p>
+                </div>
+
+                <!-- Quick Add Shortcut Banner -->
+                <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-sky-500/10 to-transparent border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div>
+                        <h4 class="font-bold text-slate-200 text-sm">快速新增專屬網頁連結</h4>
+                        <p class="text-slate-400 text-xs">即時增加班級日常、自主學習或家長專欄網頁</p>
+                    </div>
+                    <button onclick="closeAdminPanel(); openAddModal();" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow-glow-gold transition-all whitespace-nowrap">
+                        <i class="fa-solid fa-plus mr-1"></i> 新增網頁卡片
+                    </button>
+                </div>
+
+                <!-- Bulletin Management -->
+                <div class="p-4 rounded-2xl bg-night-900 border border-night-border">
+                    <label class="block font-bold text-slate-200 mb-1.5 text-sm">
+                        <i class="fa-solid fa-bullhorn text-amber-400 mr-1.5"></i> 修改班級即時公告跑馬燈
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="text" id="adminBulletinInput" class="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-night-border text-slate-100 focus:outline-none focus:border-amber-400">
+                        <button onclick="saveBulletin()" class="px-4 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 font-semibold">
+                            更新公告
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resource List Table in Admin -->
+                <div class="p-4 rounded-2xl bg-night-900 border border-night-border">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-bold text-slate-200 text-sm">
+                            <i class="fa-solid fa-list-check text-sky-400 mr-1.5"></i> 現有網頁管理列表 (<span id="adminListCount">0</span>)
+                        </h4>
+                    </div>
+                    <div class="divide-y divide-night-border max-h-60 overflow-y-auto" id="adminItemsList">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Data Backup & Reset -->
+                <div class="p-4 rounded-2xl bg-night-900 border border-night-border">
+                    <h4 class="font-bold text-slate-200 mb-2 text-sm">
+                        <i class="fa-solid fa-database text-purple-400 mr-1.5"></i> 資料備份與還原 (JSON)
+                    </h4>
+                    <p class="text-slate-400 mb-3">可將目前所有自訂的網頁配置導出為 JSON 備份，或在其他電腦匯入。</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="exportData()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium">
+                            <i class="fa-solid fa-download mr-1"></i> 匯出設定檔
+                        </button>
+                        <label class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium cursor-pointer">
+                            <i class="fa-solid fa-upload mr-1"></i> 匯入設定檔
+                            <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importData(event)">
+                        </label>
+                        <button onclick="promptResetDefaults()" class="px-3.5 py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 font-medium ml-auto">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> 重設回原廠預設
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="pt-4 border-t border-night-border flex justify-end">
+                <button onclick="closeAdminPanel()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs">
+                    關閉面板
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Dialog -->
+    <div id="confirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
+        <div class="w-full max-w-sm rounded-3xl bg-night-card border border-rose-500/40 p-6 shadow-2xl text-center">
+            <div class="w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-3 text-xl border border-rose-500/30">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirmTitle" class="text-base font-bold text-slate-100 mb-1">確定要刪除嗎？</h3>
+            <p id="confirmDesc" class="text-xs text-slate-400 mb-5">此操作將永久移除此網頁項目。</p>
+            <div class="flex space-x-3">
+                <button onclick="resolveConfirm(false)" class="w-1/2 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
+                    取消
+                </button>
+                <button onclick="resolveConfirm(true)" class="w-1/2 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-lg shadow-rose-600/30">
+                    確認執行
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webpage Iframe Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+        <div class="relative w-full max-w-5xl h-[85vh] rounded-3xl bg-night-card border border-amber-500/40 flex flex-col overflow-hidden shadow-2xl">
+            <div class="px-5 py-3.5 border-b border-night-border flex items-center justify-between bg-night-900">
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+                    <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+                    <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
+                    <span id="previewTitle" class="text-xs font-bold text-slate-200 ml-2">網頁快速預覽</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a id="previewExternalLink" href="#" target="_blank" class="text-xs text-amber-400 hover:underline flex items-center space-x-1">
+                        <span>在新分頁開啟</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                    <button onclick="closePreviewModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 bg-white relative">
+                <iframe id="previewIframe" src="" class="w-full h-full border-none" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <script>
+        const STORAGE_KEY = 'qianxian_class_hub_data_v1';
+        const AUTH_STATE_KEY = 'qianxian_admin_logged_v1';
+        const HERO_IMG_KEY = 'qianxian_hero_image_data_v1';
+
+        // 預設分類設定
+        const DEFAULT_CATEGORIES = [
+            { id: 'all', name: '全部資源', icon: 'fa-globe' },
+            { id: 'guidance', name: '光之引導 (行政常規)', icon: 'fa-compass' },
+            { id: 'transfer', name: '知識轉化 (學科探索)', icon: 'fa-book-bookmark' },
+            { id: 'inspiration', name: '靈感生成 (創意專案)', icon: 'fa-lightbulb' },
+            { id: 'expression', name: '創意表達 (成果親師)', icon: 'fa-comments' }
+        ];
+
+        // 預設精選班級經營網頁 (以圖片的靈感、光之引導、知識轉化為核心分類)
+        const DEFAULT_ITEMS = [
+            {
+                id: 'item_1',
+                title: '每日聯絡簿與作息指引',
+                url: 'https://example.com/homework',
+                category: 'guidance',
+                tag: '光之引導',
+                icon: 'fa-clipboard-list',
+                desc: '即時登記今日課堂作業、應備學用品及生活常規小叮嚀。',
+                badge: '每日必看',
+                target: '_blank'
+            },
+            {
+                id: 'item_2',
+                title: '清閒榮譽榜與星光存摺',
+                url: 'https://example.com/honor-roll',
+                category: 'guidance',
+                tag: '光之引導',
+                icon: 'fa-award',
+                desc: '點亮日常優良表現，兌換自主學習星光禮遇。',
+                badge: '即時榮譽',
+                target: '_blank'
+            },
+            {
+                id: 'item_3',
+                title: '自主數位學習歷程基地',
+                url: 'https://example.com/e-portfolio',
+                category: 'transfer',
+                tag: '知識轉化',
+                icon: 'fa-laptop-code',
+                desc: '學生個人雲端檔案庫，彙整專題報告與各科學習心得。',
+                badge: '核心專案',
+                target: '_blank'
+            },
+            {
+                id: 'item_4',
+                title: '國英數社自好站大聯網',
+                url: 'https://example.com/learning-links',
+                category: 'transfer',
+                tag: '知識轉化',
+                icon: 'fa-graduation-cap',
+                desc: '整合均一、因材網、酷英等官方與補充數位學習平台。',
+                badge: '自主探索',
+                target: '_blank'
+            },
+            {
+                id: 'item_5',
+                title: '主題探究與晨光成果相簿',
+                url: 'https://example.com/gallery',
+                category: 'inspiration',
+                tag: '靈感生成',
+                icon: 'fa-lightbulb',
+                desc: '記錄孩子在教室裡的探究光芒，活動影音與照片花絮。',
+                badge: '精彩回顧',
+                target: '_blank'
+            },
+            {
+                id: 'item_6',
+                title: '班級閱讀心得分享樹',
+                url: 'https://example.com/reading-tree',
+                category: 'inspiration',
+                tag: '靈感生成',
+                icon: 'fa-seedling',
+                desc: '讀一本好書，留下一句感悟。看小樹苗如何長成智慧大森林。',
+                badge: '好書共讀',
+                target: '_blank'
+            },
+            {
+                id: 'item_7',
+                title: '親師交流專欄與活動常見QA',
+                url: 'https://example.com/parent-teacher',
+                category: 'expression',
+                tag: '創意表達',
+                icon: 'fa-heart',
+                desc: '清閒老師的溫馨教育隨筆，陪伴家長共同引導孩子成長。',
+                badge: '親師溫馨',
+                target: '_blank'
+            },
+            {
+                id: 'item_8',
+                title: '知光引導者信箱 (悄悄話)',
+                url: 'https://example.com/secret-mailbox',
+                category: 'expression',
+                tag: '創意表達',
+                icon: 'fa-envelope-open-text',
+                desc: '不論心事、困惑或新點子，小精靈 Lumi 與老師隨時傾聽。',
+                badge: '心情傾聽',
+                target: '_blank'
+            }
+        ];
+
+        // 嚴格驗證之完整 60 款 Font Awesome 6.4.0 Free Solid 圖示 (絕不重複，100% 正確顯示)
+        const AVAILABLE_ICONS = [
+            // [1-12] 原有 12 款核心引導
+            { icon: 'fa-compass', label: '羅盤' },
+            { icon: 'fa-lightbulb', label: '燈泡' },
+            { icon: 'fa-book-bookmark', label: '書籤' },
+            { icon: 'fa-clipboard-list', label: '清單' },
+            { icon: 'fa-award', label: '榮譽' },
+            { icon: 'fa-laptop-code', label: '電腦' },
+            { icon: 'fa-graduation-cap', label: '學士' },
+            { icon: 'fa-seedling', label: '幼苗' },
+            { icon: 'fa-heart', label: '溫馨' },
+            { icon: 'fa-comments', label: '交流' },
+            { icon: 'fa-rocket', label: '火箭' },
+            { icon: 'fa-star', label: '星光' },
+
+            // [13-20] 數理、自然與科學探索 (8款)
+            { icon: 'fa-calculator', label: '數學計算' },
+            { icon: 'fa-flask', label: '化學實驗' },
+            { icon: 'fa-atom', label: '物理原子' },
+            { icon: 'fa-dna', label: '生命科學' },
+            { icon: 'fa-shapes', label: '空間幾何' },
+            { icon: 'fa-chart-pie', label: '統計圖表' },
+            { icon: 'fa-microscope', label: '顯微探究' },
+            { icon: 'fa-satellite', label: '天文太空' },
+
+            // [21-28] 語文、文學、社會與世界 (8款)
+            { icon: 'fa-pen-fancy', label: '創作美文' },
+            { icon: 'fa-feather', label: '羽毛筆記' },
+            { icon: 'fa-pen-clip', label: '重點標記' },
+            { icon: 'fa-language', label: '雙語國際' },
+            { icon: 'fa-globe', label: '世界地理' },
+            { icon: 'fa-landmark', label: '歷史古蹟' },
+            { icon: 'fa-scale-balanced', label: '公民法治' },
+            { icon: 'fa-book-open', label: '深度閱讀' },
+
+            // [29-38] 藝術、音樂、表演與思維 (10款)
+            { icon: 'fa-palette', label: '美術彩繪' },
+            { icon: 'fa-paintbrush', label: '畫筆彩塗' },
+            { icon: 'fa-music', label: '音樂旋律' },
+            { icon: 'fa-guitar', label: '吉他彈唱' },
+            { icon: 'fa-masks-theater', label: '戲劇展演' },
+            { icon: 'fa-camera', label: '生活攝影' },
+            { icon: 'fa-wand-magic-sparkles', label: '奇思妙想' },
+            { icon: 'fa-puzzle-piece', label: '邏輯拼圖' },
+            { icon: 'fa-brain', label: '心智思考' },
+            { icon: 'fa-bolt', label: '靈感迸發' },
+
+            // [39-49] 校園作息、班級常規與教具 (11款)
+            { icon: 'fa-school', label: '校園基地' },
+            { icon: 'fa-bell', label: '上課鐘聲' },
+            { icon: 'fa-chalkboard-user', label: '導師開講' },
+            { icon: 'fa-chalkboard', label: '課堂黑板' },
+            { icon: 'fa-calendar-days', label: '班級行事曆' },
+            { icon: 'fa-clock', label: '時間管理' },
+            { icon: 'fa-bullhorn', label: '即時廣播' },
+            { icon: 'fa-clipboard-check', label: '作業驗收' },
+            { icon: 'fa-bus', label: '校車安全' },
+            { icon: 'fa-file-lines', label: '書面報告' },
+            { icon: 'fa-magnifying-glass', label: '資料檢索' },
+
+            // [50-60] 品德培育、運動健康與榮耀激勵 (11款)
+            { icon: 'fa-trophy', label: '榮譽獎盃' },
+            { icon: 'fa-medal', label: '卓越獎牌' },
+            { icon: 'fa-crown', label: '班級之星' },
+            { icon: 'fa-shield-halved', label: '品格盾牌' },
+            { icon: 'fa-key', label: '解題金鑰' },
+            { icon: 'fa-tree', label: '成長大樹' },
+            { icon: 'fa-sun', label: '晨光早讀' },
+            { icon: 'fa-moon', label: '寧靜沉澱' },
+            { icon: 'fa-futbol', label: '足球運動' },
+            { icon: 'fa-basketball', label: '籃球團隊' },
+            { icon: 'fa-gem', label: '發光寶石' }
+        ];
+
+        let state = {
+            items: [],
+            bulletin: '🌟 歡迎來到清閒小築！本週重點：數位學習歷程上傳、晨光閱讀星光分享會已啟動，請點選專區查看各項資訊。',
+            selectedCategory: 'all',
+            searchQuery: '',
+            isAdmin: false,
+            confirmResolve: null
+        };
+
+        // 載入儲存資料
+        function loadData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    state.items = parsed.items || DEFAULT_ITEMS;
+                    if (parsed.bulletin) state.bulletin = parsed.bulletin;
+                } else {
+                    state.items = [...DEFAULT_ITEMS];
+                }
+            } catch (e) {
+                console.error("載入資料失敗，啟用預設配置", e);
+                state.items = [...DEFAULT_ITEMS];
+            }
+
+            // 載入自訂主視覺圖片 (如有)
+        const savedHero = localStorage.getItem(HERO_IMG_KEY);
+        if (savedHero) {
+            const imgEl = document.getElementById('heroCharacterImg');
+            if (imgEl) imgEl.src = savedHero;
+        }
+
+        // 檢查管理員會話
+        state.isAdmin = sessionStorage.getItem(AUTH_STATE_KEY) === 'true';
+        updateAdminUI();
+        renderCategoryFilters();
+        renderWebCards();
+        updateStats();
+        document.getElementById('bulletinText').textContent = state.bulletin;
+        document.getElementById('adminBulletinInput').value = state.bulletin;
+    }
+
+    // 上傳/更換主圖 (含自動尺寸壓縮以確保能順暢存入 localStorage)
+    function uploadHeroImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const tempImg = new Image();
+            tempImg.onload = function() {
+                // 將圖片縮放至適合卡片顯示的尺寸 (最高 800px) 以節省儲存空間
+                const maxDim = 800;
+                let width = tempImg.width;
+                let height = tempImg.height;
+
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+
+                const offCanvas = document.createElement('canvas');
+                offCanvas.width = width;
+                offCanvas.height = height;
+                const offCtx = offCanvas.getContext('2d');
+                offCtx.drawImage(tempImg, 0, 0, width, height);
+
+                const compressedDataUrl = offCanvas.toDataURL('image/jpeg', 0.88);
+                applyNewHeroImage(compressedDataUrl);
+            };
+            tempImg.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // 透過 URL 網址設定主視覺圖片
+    function applyHeroUrl() {
+        const input = document.getElementById('heroUrlInput');
+        const url = input ? input.value.trim() : '';
+        if (!url) {
+            showToast('請輸入正確的圖片網址', 'warning');
+            return;
+        }
+        applyNewHeroImage(url);
+        if (input) input.value = '';
+    }
+
+    // 套用並儲存主視覺圖片
+    function applyNewHeroImage(src) {
+        const imgEl = document.getElementById('heroCharacterImg');
+        if (imgEl) {
+            imgEl.src = src;
+        }
+        try {
+            localStorage.setItem(HERO_IMG_KEY, src);
+            showToast('主視覺圖片已成功更新並保存！', 'success');
+        } catch (err) {
+            showToast('圖片已更新預覽（超出本機儲存大小限制）', 'warning');
+        }
+    }
+
+    // 重設回原本預設主圖
+    function resetHeroImage() {
+        localStorage.removeItem(HERO_IMG_KEY);
+        const imgEl = document.getElementById('heroCharacterImg');
+        if (imgEl) {
+            imgEl.src = 'FE07B33B-4011-4858-A850-4F0417FFFBE5.PNG';
+        }
+        showToast('已恢復預設主視覺圖片', 'info');
+    }
+
+    // 保存資料至 LocalStorage
+    function saveData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    items: state.items,
+                    bulletin: state.bulletin
+                }));
+            } catch (e) {
+                showToast('無法儲存至本機快取', 'error');
+            }
+        }
+
+        function renderCategoryFilters() {
+            const container = document.getElementById('categoryFilterContainer');
+            const selectEl = document.getElementById('itemCategorySelect');
+            container.innerHTML = '';
+            selectEl.innerHTML = '';
+
+            DEFAULT_CATEGORIES.forEach(cat => {
+                // Filter Tab Buttons
+                const btn = document.createElement('button');
+                const isActive = state.selectedCategory === cat.id;
+                btn.className = `flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+                    isActive 
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-glow-gold' 
+                    : 'bg-night-card hover:bg-slate-800 text-slate-300 border border-night-border'
+                }`;
+                btn.innerHTML = `<i class="fa-solid ${cat.icon} text-xs"></i> <span>${cat.name}</span>`;
+                btn.onclick = () => {
+                    state.selectedCategory = cat.id;
+                    renderCategoryFilters();
+                    renderWebCards();
+                };
+                container.appendChild(btn);
+
+                // Modal Category Option (except 'all')
+                if (cat.id !== 'all') {
+                    const opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.textContent = cat.name;
+                    selectEl.appendChild(opt);
+                }
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('statTotalLinks').textContent = `${state.items.length} 個整合平台`;
+            document.getElementById('adminListCount').textContent = state.items.length;
+        }
+
+        function renderWebCards() {
+            const grid = document.getElementById('webCardsGrid');
+            const empty = document.getElementById('emptyState');
+            const countBadge = document.getElementById('activeCountBadge');
+            grid.innerHTML = '';
+
+            const filtered = state.items.filter(item => {
+                const matchCategory = state.selectedCategory === 'all' || item.category === state.selectedCategory;
+                const matchQuery = !state.searchQuery || 
+                    item.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                    (item.desc && item.desc.toLowerCase().includes(state.searchQuery.toLowerCase())) ||
+                    (item.tag && item.tag.toLowerCase().includes(state.searchQuery.toLowerCase()));
+                return matchCategory && matchQuery;
+            });
+
+            countBadge.textContent = `顯示中：${filtered.length} 個站點`;
+
+            if (filtered.length === 0) {
+                grid.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            empty.classList.add('hidden');
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "group relative rounded-2xl bg-night-card/90 border border-night-border hover:border-amber-400/60 p-5 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-glow-gold";
+                
+                // Color accent by tag
+                let tagColorClass = 'text-amber-400 bg-amber-500/10 border-amber-500/30';
+                if (item.tag === '光之引導') tagColorClass = 'text-sky-400 bg-sky-500/10 border-sky-500/30';
+                if (item.tag === '創意表達') tagColorClass = 'text-purple-400 bg-purple-500/10 border-purple-500/30';
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Card Header: Q-Icon & Tag -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-slate-900 to-night-card border border-amber-500/30 text-amber-300 flex items-center justify-center text-xl shadow-sm group-hover:scale-110 group-hover:border-amber-400 transition-all">
+                                <i class="fa-solid ${item.icon || 'fa-compass'}"></i>
+                            </div>
+                            <div class="flex items-center space-x-1.5">
+                                ${item.badge ? `<span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-amber-400 text-slate-950">${escapeHtml(item.badge)}</span>` : ''}
+                                <span class="px-2 py-0.5 text-[10px] font-medium rounded-md border ${tagColorClass}">${escapeHtml(item.tag || '班級專案')}</span>
+                            </div>
+                        </div>
+
+                        <!-- Title & Description -->
+                        <h4 class="text-base font-bold text-slate-100 mb-2 group-hover:text-amber-300 transition-colors line-clamp-1">
+                            ${escapeHtml(item.title)}
+                        </h4>
+                        <p class="text-xs text-slate-400 leading-relaxed line-clamp-2 mb-4">
+                            ${escapeHtml(item.desc || '班級專屬學習經營空間，點擊立即進入參與！')}
+                        </p>
+                    </div>
+
+                    <!-- Card Actions -->
+                    <div class="pt-3 border-t border-night-border/80 flex items-center justify-between">
+                        <button onclick="handleOpenLink('${item.id}')" class="text-xs font-semibold text-sky-400 group-hover:text-amber-300 flex items-center space-x-1.5 transition-colors">
+                            <span>進入網頁</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </button>
+                        
+                        <!-- Admin Edit/Delete Controls -->
+                        <div class="${state.isAdmin ? 'flex' : 'hidden'} items-center space-x-1">
+                            <button onclick="openEditModal('${item.id}')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-300 flex items-center justify-center text-xs transition-colors" title="編輯">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="confirmDeleteItem('${item.id}')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-red-900/60 text-slate-300 hover:text-red-400 flex items-center justify-center text-xs transition-colors" title="刪除">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function handleOpenLink(id) {
+            const item = state.items.find(i => i.id === id);
+            if (!item) return;
+
+            if (item.target === 'modal') {
+                openPreviewModal(item.title, item.url);
+            } else {
+                window.open(item.url, item.target || '_blank');
+            }
+        }
+
+        function openPreviewModal(title, url) {
+            const modal = document.getElementById('previewModal');
+            document.getElementById('previewTitle').textContent = title;
+            document.getElementById('previewExternalLink').href = url;
+            document.getElementById('previewIframe').src = url;
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closePreviewModal() {
+            const modal = document.getElementById('previewModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('previewIframe').src = '';
+            }, 200);
+        }
+
+        function toggleSearch() {
+            const dropdown = document.getElementById('searchDropdown');
+            dropdown.classList.toggle('hidden');
+            if (!dropdown.classList.contains('hidden')) {
+                document.getElementById('globalSearchInput').focus();
+            }
+        }
+
+        function handleSearch(val) {
+            state.searchQuery = val.trim();
+            renderWebCards();
+        }
+
+        function clearSearch() {
+            document.getElementById('globalSearchInput').value = '';
+            state.searchQuery = '';
+            state.selectedCategory = 'all';
+            renderCategoryFilters();
+            renderWebCards();
+        }
+
+        function filterByTag(tagName) {
+            // Find category matching or set search query
+            state.searchQuery = tagName;
+            document.getElementById('globalSearchInput').value = tagName;
+            const dropdown = document.getElementById('searchDropdown');
+            dropdown.classList.remove('hidden');
+            renderWebCards();
+            showToast(`已套用篩選：「${tagName}」`, 'info');
+        }
+
+        function openAdminModal() {
+            if (state.isAdmin) {
+                openAdminPanel();
+                return;
+            }
+            const modal = document.getElementById('adminAuthModal');
+            const input = document.getElementById('adminPasswordInput');
+            const error = document.getElementById('authErrorMsg');
+            input.value = '';
+            error.classList.add('hidden');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                document.getElementById('adminAuthModalContent').classList.remove('scale-95');
+                input.focus();
+            }, 10);
+        }
+
+        function closeAdminModal() {
+            const modal = document.getElementById('adminAuthModal');
+            modal.classList.add('opacity-0');
+            document.getElementById('adminAuthModalContent').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        function handleAdminAuth(e) {
+            e.preventDefault();
+            const input = document.getElementById('adminPasswordInput').value;
+            const error = document.getElementById('authErrorMsg');
+
+            // 嚴格密碼驗證：Rccbok6869 (不提供任何提示)
+            if (input === 'Rccbok6869') {
+                state.isAdmin = true;
+                sessionStorage.setItem(AUTH_STATE_KEY, 'true');
+                closeAdminModal();
+                updateAdminUI();
+                renderWebCards();
+                showToast('已解鎖清閒小築管理模式', 'success');
+                setTimeout(() => openAdminPanel(), 250);
+            } else {
+                error.classList.remove('hidden');
+                document.getElementById('adminPasswordInput').value = '';
+                document.getElementById('adminPasswordInput').focus();
+            }
+        }
+
+        function adminLogout() {
+            state.isAdmin = false;
+            sessionStorage.removeItem(AUTH_STATE_KEY);
+            closeAdminPanel();
+            updateAdminUI();
+            renderWebCards();
+            showToast('已退出後台管理模式', 'info');
+        }
+
+        function updateAdminUI() {
+            const btnText = document.getElementById('adminBtnText');
+            const actionGroup = document.getElementById('adminActionGroup');
+            const adminOnlyElements = document.querySelectorAll('.admin-only');
+
+            if (state.isAdmin) {
+                btnText.textContent = '後台主控';
+                actionGroup.classList.remove('hidden');
+                actionGroup.classList.add('flex');
+                adminOnlyElements.forEach(el => el.classList.remove('hidden'));
+            } else {
+                btnText.textContent = '管理後台';
+                actionGroup.classList.add('hidden');
+                actionGroup.classList.remove('flex');
+                adminOnlyElements.forEach(el => el.classList.add('hidden'));
+            }
+        }
+
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById('toggleEyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-regular fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-regular fa-eye';
+            }
+        }
+
+        function openAdminPanel() {
+            if (!state.isAdmin) {
+                openAdminModal();
+                return;
+            }
+            const modal = document.getElementById('adminPanelModal');
+            renderAdminItemsList();
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeAdminPanel() {
+            const modal = document.getElementById('adminPanelModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        function renderAdminItemsList() {
+            const container = document.getElementById('adminItemsList');
+            container.innerHTML = '';
+            document.getElementById('adminListCount').textContent = state.items.length;
+
+            state.items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'py-3 flex items-center justify-between text-xs hover:bg-slate-800/40 px-2 rounded-xl transition-colors';
+                row.innerHTML = `
+                    <div class="flex items-center space-x-3 overflow-hidden pr-3">
+                        <div class="w-8 h-8 rounded-lg bg-slate-800 text-amber-300 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid ${item.icon || 'fa-compass'}"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-slate-200 truncate">${escapeHtml(item.title)}</p>
+                            <p class="text-[11px] text-slate-400 truncate">${escapeHtml(item.url)}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <button onclick="closeAdminPanel(); openEditModal('${item.id}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300">
+                            編輯
+                        </button>
+                        <button onclick="confirmDeleteItem('${item.id}')" class="px-2.5 py-1 rounded-lg bg-red-950/50 hover:bg-red-900/60 text-red-300">
+                            刪除
+                        </button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function saveBulletin() {
+            const newText = document.getElementById('adminBulletinInput').value.trim();
+            if (!newText) {
+                showToast('公告內容不能為空', 'warning');
+                return;
+            }
+            state.bulletin = newText;
+            document.getElementById('bulletinText').textContent = state.bulletin;
+            saveData();
+            showToast('班級公告已成功更新！', 'success');
+        }
+
+        function initIconPicker(selected = 'fa-compass', filterKeyword = '') {
+            const container = document.getElementById('iconPickerContainer');
+            const totalDisplay = document.getElementById('iconTotalDisplay');
+            if (totalDisplay) {
+                totalDisplay.textContent = AVAILABLE_ICONS.length;
+            }
+            container.innerHTML = '';
+            
+            const filteredIcons = AVAILABLE_ICONS.filter(item => {
+                if (!filterKeyword) return true;
+                const kw = filterKeyword.toLowerCase().trim();
+                return item.label.toLowerCase().includes(kw) || item.icon.toLowerCase().includes(kw);
+            });
+
+            if (filteredIcons.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-4 text-center text-slate-500 text-xs">無符合的圖示</div>';
+                return;
+            }
+
+            filteredIcons.forEach(item => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                const isSelected = item.icon === selected;
+                btn.className = `p-2 rounded-xl border text-center transition-all flex flex-col items-center justify-center ${
+                    isSelected ? 'bg-amber-500/20 border-amber-400 text-amber-300 ring-1 ring-amber-400/50' : 'bg-slate-900 border-night-border text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                }`;
+                btn.innerHTML = `<i class="fa-solid ${item.icon} text-sm mb-1.5"></i><span class="text-[9px] truncate w-full">${escapeHtml(item.label)}</span>`;
+                btn.onclick = () => {
+                    document.getElementById('selectedIcon').value = item.icon;
+                    initIconPicker(item.icon, document.getElementById('iconSearchInput').value);
+                };
+                container.appendChild(btn);
+            });
+
+            document.getElementById('selectedIcon').value = selected;
+        }
+
+        function filterIconPicker(keyword) {
+            const currentSelected = document.getElementById('selectedIcon').value;
+            initIconPicker(currentSelected, keyword);
+        }
+
+        function openAddModal() {
+            if (!state.isAdmin) {
+                openAdminModal();
+                return;
+            }
+            document.getElementById('itemModalTitle').textContent = '新增班級網頁資源';
+            document.getElementById('editItemId').value = '';
+            document.getElementById('itemTitleInput').value = '';
+            document.getElementById('itemUrlInput').value = '';
+            document.getElementById('itemDescInput').value = '';
+            document.getElementById('itemBadgeInput').value = '';
+            document.getElementById('itemCategorySelect').value = 'guidance';
+            document.getElementById('itemTagSelect').value = '光之引導';
+            document.getElementById('itemTargetSelect').value = '_blank';
+            document.getElementById('iconSearchInput').value = '';
+            initIconPicker('fa-compass');
+
+            const modal = document.getElementById('itemModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                document.getElementById('itemModalContent').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function openEditModal(id) {
+            const item = state.items.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('itemModalTitle').textContent = '編輯班級網頁資訊';
+            document.getElementById('editItemId').value = item.id;
+            document.getElementById('itemTitleInput').value = item.title;
+            document.getElementById('itemUrlInput').value = item.url;
+            document.getElementById('itemDescInput').value = item.desc || '';
+            document.getElementById('itemBadgeInput').value = item.badge || '';
+            document.getElementById('itemCategorySelect').value = item.category || 'guidance';
+            document.getElementById('itemTagSelect').value = item.tag || '光之引導';
+            document.getElementById('itemTargetSelect').value = item.target || '_blank';
+            document.getElementById('iconSearchInput').value = '';
+            initIconPicker(item.icon || 'fa-compass');
+
+            const modal = document.getElementById('itemModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                document.getElementById('itemModalContent').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeItemModal() {
+            const modal = document.getElementById('itemModal');
+            modal.classList.add('opacity-0');
+            document.getElementById('itemModalContent').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        function handleSaveItem(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editItemId').value;
+            const title = document.getElementById('itemTitleInput').value.trim();
+            const url = document.getElementById('itemUrlInput').value.trim();
+            const desc = document.getElementById('itemDescInput').value.trim();
+            const badge = document.getElementById('itemBadgeInput').value.trim();
+            const category = document.getElementById('itemCategorySelect').value;
+            const tag = document.getElementById('itemTagSelect').value;
+            const icon = document.getElementById('selectedIcon').value;
+            const target = document.getElementById('itemTargetSelect').value;
+
+            if (!title || !url) {
+                showToast('請完整填寫必填欄位', 'warning');
+                return;
+            }
+
+            if (editId) {
+                // Update
+                const index = state.items.findIndex(i => i.id === editId);
+                if (index !== -1) {
+                    state.items[index] = { ...state.items[index], title, url, desc, badge, category, tag, icon, target };
+                    showToast('已成功更新網頁資料', 'success');
+                }
+            } else {
+                // Add New
+                const newItem = {
+                    id: 'item_' + Date.now(),
+                    title,
+                    url,
+                    desc,
+                    badge,
+                    category,
+                    tag,
+                    icon,
+                    target
+                };
+                state.items.unshift(newItem);
+                showToast('已新增網頁至清閒小築！', 'success');
+            }
+
+            saveData();
+            renderWebCards();
+            updateStats();
+            closeItemModal();
+        }
+
+        function confirmDeleteItem(id) {
+            const item = state.items.find(i => i.id === id);
+            if (!item) return;
+
+            openCustomConfirm('刪除確認', `確定要將「${item.title}」自班級天地中移除嗎？此動作無法復原。`, (confirmed) => {
+                if (confirmed) {
+                    state.items = state.items.filter(i => i.id !== id);
+                    saveData();
+                    renderWebCards();
+                    updateStats();
+                    renderAdminItemsList();
+                    showToast('已順利移除該項目', 'info');
+                }
+            });
+        }
+
+        function openCustomConfirm(title, desc, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmDesc').textContent = desc;
+            state.confirmResolve = callback;
+
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function resolveConfirm(isOk) {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                if (state.confirmResolve) state.confirmResolve(isOk);
+                state.confirmResolve = null;
+            }, 200);
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
+                items: state.items,
+                bulletin: state.bulletin,
+                exportedAt: new Date().toISOString()
+            }, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `清閒小築備份_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast('已導出備份設定檔！', 'success');
+        }
+
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const parsed = JSON.parse(event.target.result);
+                    if (Array.isArray(parsed.items)) {
+                        state.items = parsed.items;
+                        if (parsed.bulletin) state.bulletin = parsed.bulletin;
+                        saveData();
+                        renderWebCards();
+                        updateStats();
+                        renderAdminItemsList();
+                        document.getElementById('bulletinText').textContent = state.bulletin;
+                        showToast('已成功匯入備份資料！', 'success');
+                    } else {
+                        showToast('檔案格式不合，請確認為正確的設定檔', 'error');
+                    }
+                } catch (err) {
+                    showToast('解析備份檔案失敗', 'error');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        function promptResetDefaults() {
+            openCustomConfirm('重設為原廠資料', '確定要將所有網頁重設為初始清單嗎？所有自訂連結將會被覆蓋。', (ok) => {
+                if (ok) {
+                    state.items = [...DEFAULT_ITEMS];
+                    state.bulletin = '🌟 歡迎來到清閒小築！本週重點：數位學習歷程上傳、晨光閱讀星光分享會已啟動，請點選專區查看各項資訊。';
+                    saveData();
+                    renderWebCards();
+                    updateStats();
+                    renderAdminItemsList();
+                    document.getElementById('bulletinText').textContent = state.bulletin;
+                    showToast('已恢復預設配置！', 'success');
+                }
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let icon = 'fa-circle-info';
+            let borderClass = 'border-sky-500/40 text-sky-200';
+            if (type === 'success') {
+                icon = 'fa-circle-check';
+                borderClass = 'border-amber-400 text-amber-200';
+            } else if (type === 'error') {
+                icon = 'fa-triangle-exclamation';
+                borderClass = 'border-rose-500 text-rose-200';
+            } else if (type === 'warning') {
+                icon = 'fa-circle-exclamation';
+                borderClass = 'border-yellow-400 text-yellow-200';
+            }
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-2xl bg-night-card/95 border ${borderClass} shadow-xl backdrop-blur-md flex items-center space-x-3 text-xs font-semibold transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icon} text-sm"></i>
+                <span>${escapeHtml(message)}</span>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, m => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[m]);
+        }
+
+        const canvas = document.getElementById('ambientCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class StarParticle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedY = -(Math.random() * 0.3 + 0.1);
+                this.speedX = (Math.random() - 0.5) * 0.2;
+                this.opacity = Math.random() * 0.7 + 0.2;
+                this.hue = Math.random() > 0.4 ? 42 : 200; // Warm gold or slight blue
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
+                    this.reset();
+                    this.y = canvas.height;
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${this.hue}, 90%, 65%, ${this.opacity})`;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = `hsla(${this.hue}, 90%, 65%, 0.8)`;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.min(window.innerWidth / 20, 50);
+            for (let i = 0; i < count; i++) {
+                particles.push(new StarParticle());
+            }
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvas();
+            initParticles();
+            animateCanvas();
+            loadData();
+        });
+    </script>
+</body>
+</html>
