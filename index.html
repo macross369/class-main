@@ -252,7 +252,7 @@
                     </h2>
 
                     <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl mb-6 font-light">
-                        歡迎來到清閒老師與智慧小精靈 <strong>Lumi（知光引導者）</strong> 的班級天地！這裡匯聚了班級各項學習網站、日常管理規章、自主探索利器與家長溝通橋樑，讓我們攜手並進。
+                        歡迎來到閒雲老師的班級經營小天地！這裡匯聚了各項班級經營、學習網站等教學工具，將協助老師增加教學的效率、減輕班級經營上的負擔。
                     </p>
 
                     <!-- Holographic Golden Inscription Board (Inspired by the Image) -->
@@ -1687,6 +1687,45 @@
             setTimeout(() => modal.classList.add('hidden'), 200);
         }
 
+        // 更動站點順序（支援分類視圖下精準對調）
+        function moveItem(id, direction) {
+            const filtered = state.items.filter(item => {
+                const matchCategory = state.selectedCategory === 'all' || item.category === state.selectedCategory;
+                const matchQuery = !state.searchQuery || 
+                    item.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                    (item.desc && item.desc.toLowerCase().includes(state.searchQuery.toLowerCase())) ||
+                    (item.tag && item.tag.toLowerCase().includes(state.searchQuery.toLowerCase()));
+                return matchCategory && matchQuery;
+            });
+
+            const currentIndex = filtered.findIndex(i => i.id === id);
+            if (currentIndex === -1) return;
+
+            const targetIndex = currentIndex + direction;
+            if (targetIndex < 0 || targetIndex >= filtered.length) {
+                showToast(direction < 0 ? '已經在第一個位置了' : '已經在最後一個位置了', 'info');
+                return;
+            }
+
+            const currentItem = filtered[currentIndex];
+            const targetItem = filtered[targetIndex];
+
+            // 在全局清單中交換兩者的位置
+            const idxA = state.items.findIndex(i => i.id === currentItem.id);
+            const idxB = state.items.findIndex(i => i.id === targetItem.id);
+
+            if (idxA !== -1 && idxB !== -1) {
+                const temp = state.items[idxA];
+                state.items[idxA] = state.items[idxB];
+                state.items[idxB] = temp;
+
+                saveData();
+                renderWebCards();
+                renderAdminItemsList();
+                showToast('已調整站點順序！', 'success');
+            }
+        }
+
         function renderAdminItemsList() {
             const container = document.getElementById('adminItemsList');
             container.innerHTML = '';
@@ -1705,7 +1744,13 @@
                             <p class="text-[11px] text-slate-400 truncate">${escapeHtml(item.url)}</p>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-2 flex-shrink-0">
+                    <div class="flex items-center space-x-1.5 flex-shrink-0">
+                        <button onclick="moveItem('${item.id}', -1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-300 flex items-center justify-center text-xs transition-colors" title="上移">
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </button>
+                        <button onclick="moveItem('${item.id}', 1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-300 flex items-center justify-center text-xs transition-colors" title="下移">
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </button>
                         <button onclick="closeAdminPanel(); openEditModal('${item.id}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300">
                             編輯
                         </button>
