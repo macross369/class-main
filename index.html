@@ -207,6 +207,15 @@
 
                 <!-- Right Action Buttons -->
                 <div class="flex items-center space-x-3">
+                    <!-- Firebase Cloud Sync Status Indicator -->
+                    <button onclick="handleSyncBadgeClick()" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-night-card border border-night-border hover:border-amber-400/40 text-xs transition-all shadow-sm cursor-pointer" title="查看雲端同步狀態">
+                        <span class="relative flex h-2 w-2">
+                            <span id="syncPulsePing" class="hidden animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span id="syncDot" class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
+                        </span>
+                        <span id="syncStatusText" class="font-medium text-slate-400 text-[11px]">本機模式</span>
+                    </button>
+
                     <button id="searchTriggerBtn" onclick="toggleSearch()" class="p-2.5 rounded-xl bg-night-card border border-night-border text-slate-300 hover:text-amber-400 hover:border-amber-500/40 transition-all shadow-sm">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
@@ -698,6 +707,31 @@
                     </div>
                 </div>
 
+                <!-- Firebase Realtime Cloud Sync Settings -->
+                <div class="p-4 rounded-2xl bg-night-900 border border-sky-500/30">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-bold text-slate-200 text-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-cloud-arrow-up text-sky-400"></i>
+                            <span>Firebase 跨載具即時雲端同步 (GitHub Pages 適用)</span>
+                        </h4>
+                        <span id="adminSyncStateBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700">未連線</span>
+                    </div>
+                    <p class="text-slate-400 text-[11px] mb-2 leading-relaxed">
+                        貼上您的 Firebase Web 應用程式 SDK 設定 JSON 物件，即可讓不同載具（手機、平板、電腦）即時同步網頁清單與自訂內容，輸入時亦絕不中斷打字。
+                    </p>
+                    <div class="space-y-2">
+                        <textarea id="firebaseConfigInput" rows="3" placeholder='{"apiKey": "AIzaSy...", "authDomain": "...firebaseapp.com", "projectId": "...", ...}' class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-night-border text-slate-200 text-[11px] font-mono focus:outline-none focus:border-sky-400"></textarea>
+                        <div class="flex items-center space-x-2">
+                            <button type="button" onclick="saveAndConnectFirebase()" class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-md transition-all">
+                                <i class="fa-solid fa-link mr-1"></i> 連線並啟用同步
+                            </button>
+                            <button type="button" onclick="disconnectFirebaseConfig()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-all">
+                                斷開雲端設定
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Resource List Table in Admin -->
                 <div class="p-4 rounded-2xl bg-night-900 border border-night-border">
                     <div class="flex items-center justify-between mb-3">
@@ -793,6 +827,25 @@
         const STORAGE_KEY = 'qianxian_class_hub_data_v1';
         const AUTH_STATE_KEY = 'qianxian_admin_logged_v1';
         const HERO_IMG_KEY = 'qianxian_hero_image_data_v1';
+        const FIREBASE_CONFIG_KEY = 'qianxian_firebase_config_v1';
+
+        // 預設內建您的專屬 Firebase 雲端配置 (class-main-ba494)
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyD-ds8ZkqC84Z6eoeXwE8QU3JE9cBa_e8w",
+            authDomain: "class-main-ba494.firebaseapp.com",
+            projectId: "class-main-ba494",
+            storageBucket: "class-main-ba494.firebasestorage.app",
+            messagingSenderId: "560068246059",
+            appId: "1:560068246059:web:f372d7e5c755f02898886e"
+        };
+
+        // Firebase 執行期狀態
+        let fbApp = null;
+        let fbAuth = null;
+        let fbDb = null;
+        let fbUnsubscribe = null;
+        let isSyncingToCloud = false;
+        let lastSyncedTimestamp = 0;
 
         // 8 種支援光澤色彩的視覺樣式定義
         const THEME_COLOR_STYLES = {
@@ -1044,8 +1097,288 @@
             selectedCategory: 'all',
             searchQuery: '',
             isAdmin: false,
-            confirmResolve: null
+            confirmResolve: null,
+            updatedAt: Date.now()
         };
+
+        // 檢查使用者當前是否正在進行輸入或編輯中 (確保同步過程絕不干擾資料輸入)
+        function isUserActivelyTyping() {
+            const active = document.activeElement;
+            const isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+            const isItemModalOpen = !document.getElementById('itemModal').classList.contains('hidden');
+            const isAdminPanelOpen = !document.getElementById('adminPanelModal').classList.contains('hidden');
+            return isTyping || isItemModalOpen || isAdminPanelOpen;
+        }
+
+        // 更新同步狀態指示標籤
+        function updateSyncStatusUI(status, label) {
+            const dot = document.getElementById('syncDot');
+            const ping = document.getElementById('syncPulsePing');
+            const text = document.getElementById('syncStatusText');
+            const adminBadge = document.getElementById('adminSyncStateBadge');
+
+            if (!dot || !text) return;
+
+            if (status === 'connected') {
+                dot.className = 'relative inline-flex rounded-full h-2 w-2 bg-emerald-400';
+                if (ping) {
+                    ping.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75';
+                    ping.classList.remove('hidden');
+                }
+                text.textContent = label || '即時同步中';
+                text.className = 'font-semibold text-emerald-300';
+                if (adminBadge) {
+                    adminBadge.textContent = '雲端已連線';
+                    adminBadge.className = 'px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-500/40';
+                }
+            } else if (status === 'syncing') {
+                dot.className = 'relative inline-flex rounded-full h-2 w-2 bg-amber-400';
+                if (ping) ping.classList.remove('hidden');
+                text.textContent = '同步更新中...';
+                text.className = 'font-semibold text-amber-300';
+            } else if (status === 'error') {
+                dot.className = 'relative inline-flex rounded-full h-2 w-2 bg-rose-500';
+                if (ping) ping.classList.add('hidden');
+                text.textContent = label || '同步異常';
+                text.className = 'font-semibold text-rose-300';
+                if (adminBadge) {
+                    adminBadge.textContent = '連線失敗';
+                    adminBadge.className = 'px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-950/60 text-rose-300 border border-rose-500/40';
+                }
+            } else {
+                dot.className = 'relative inline-flex rounded-full h-2 w-2 bg-slate-500';
+                if (ping) ping.classList.add('hidden');
+                text.textContent = '本機模式';
+                text.className = 'font-medium text-slate-400';
+                if (adminBadge) {
+                    adminBadge.textContent = '未啟用雲端';
+                    adminBadge.className = 'px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-400 border border-slate-700';
+                }
+            }
+        }
+
+        // 點擊同步狀態按鈕時的快捷操作
+        function handleSyncBadgeClick() {
+            if (!state.isAdmin) {
+                openAdminModal();
+            } else {
+                openAdminPanel();
+                const configInput = document.getElementById('firebaseConfigInput');
+                if (configInput) configInput.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // 取得有效 Firebase 配置
+        function getEffectiveFirebaseConfig() {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                try {
+                    return JSON.parse(__firebase_config);
+                } catch(e) {}
+            }
+            const localSaved = localStorage.getItem(FIREBASE_CONFIG_KEY);
+            if (localSaved) {
+                try {
+                    return JSON.parse(localSaved);
+                } catch(e) {}
+            }
+            // 預設直接採用專屬配置
+            return DEFAULT_FIREBASE_CONFIG;
+        }
+
+        // 初始化 Firebase Firestore 跨載具同步
+        async function initFirebaseSync() {
+            const config = getEffectiveFirebaseConfig();
+            if (!config || !config.apiKey || !config.projectId) {
+                updateSyncStatusUI('offline', '本機模式');
+                return;
+            }
+
+            try {
+                updateSyncStatusUI('syncing', '正在連線雲端...');
+
+                // 動態載入 Firebase Modular SDK (遵守 RULE 1, 2, 3)
+                const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+                const { getAuth, signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                const { getFirestore, doc, setDoc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+
+                fbApp = getApps().length > 0 ? getApps()[0] : initializeApp(config);
+                fbAuth = getAuth(fbApp);
+                fbDb = getFirestore(fbApp);
+
+                // RULE 3: 必須先進行身份驗證再讀寫資料庫
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(fbAuth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(fbAuth);
+                }
+
+                if (!fbAuth.currentUser) {
+                    throw new Error("認證未完成");
+                }
+
+                // RULE 1: 嚴格使用 /artifacts/{appId}/public/data/{collectionName}
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'qianxian-class-hub';
+                const hubDocRef = doc(fbDb, 'artifacts', appId, 'public', 'data', 'hubConfig', 'mainData');
+
+                // 移除舊的監聽器避免重複綁定
+                if (fbUnsubscribe) fbUnsubscribe();
+
+                // 監聽即時更新 (RULE 2: 簡單單文檔監聽，不使用任何複合查詢)
+                fbUnsubscribe = onSnapshot(hubDocRef, (snap) => {
+                    if (!snap.exists()) {
+                        // 若雲端尚無資料，將當前本機資料推送至雲端種子
+                        pushStateToFirebase(true);
+                        updateSyncStatusUI('connected', '即時同步中');
+                        return;
+                    }
+
+                    const remote = snap.data();
+                    if (!remote || !remote.updatedAt) return;
+
+                    // 若剛由本機送出，略過重複回傳
+                    if (remote.updatedAt === lastSyncedTimestamp) {
+                        updateSyncStatusUI('connected', '即時同步中');
+                        return;
+                    }
+
+                    // 關鍵核心：若使用者當前正在輸入文字或編輯彈窗開啟中，絕不干擾輸入！
+                    if (isUserActivelyTyping()) {
+                        // 僅背景更新狀態物件與背景卡片，絕不覆寫作用中的輸入框或表單
+                        if (remote.items && Array.isArray(remote.items)) state.items = remote.items;
+                        if (remote.themes && Array.isArray(remote.themes)) state.themes = remote.themes;
+                        if (remote.bulletin) state.bulletin = remote.bulletin;
+                        state.updatedAt = remote.updatedAt;
+
+                        // 平滑更新背景卡片與主題，不影響目前聚焦的輸入游標
+                        renderWebCards();
+                        renderHeroOrbitBadges();
+                        updateStats();
+                        updateSyncStatusUI('connected', '即時同步中');
+                        return;
+                    }
+
+                    // 當使用者無活動輸入時，進行完整更新
+                    if (remote.items && Array.isArray(remote.items)) state.items = remote.items;
+                    if (remote.themes && Array.isArray(remote.themes)) state.themes = remote.themes;
+                    if (remote.bulletin) {
+                        state.bulletin = remote.bulletin;
+                        document.getElementById('bulletinText').textContent = state.bulletin;
+                        const adminBul = document.getElementById('adminBulletinInput');
+                        if (adminBul) adminBul.value = state.bulletin;
+                    }
+                    if (remote.heroImg) {
+                        const heroImg = document.getElementById('heroCharacterImg');
+                        if (heroImg && heroImg.src !== remote.heroImg) {
+                            heroImg.src = remote.heroImg;
+                            localStorage.setItem(HERO_IMG_KEY, remote.heroImg);
+                        }
+                    }
+
+                    state.updatedAt = remote.updatedAt;
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        items: state.items,
+                        themes: state.themes,
+                        bulletin: state.bulletin
+                    }));
+
+                    renderCategoryFilters();
+                    renderWebCards();
+                    renderHeroOrbitBadges();
+                    updateStats();
+                    renderAdminThemesList();
+                    renderAdminItemsList();
+                    updateSyncStatusUI('connected', '即時同步中');
+                }, (error) => {
+                    console.warn("Firebase 監聽錯誤:", error);
+                    updateSyncStatusUI('error', '同步受限');
+                });
+
+                updateSyncStatusUI('connected', '即時同步中');
+            } catch (err) {
+                console.warn("Firebase 初始化失敗:", err);
+                updateSyncStatusUI('error', '連線異常');
+            }
+        }
+
+        // 推送狀態至 Firebase Firestore
+        async function pushStateToFirebase(force = false) {
+            if (!fbDb || !fbAuth || !fbAuth.currentUser) return;
+            if (isSyncingToCloud && !force) return;
+
+            try {
+                isSyncingToCloud = true;
+                const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'qianxian-class-hub';
+                const hubDocRef = doc(fbDb, 'artifacts', appId, 'public', 'data', 'hubConfig', 'mainData');
+
+                const now = Date.now();
+                lastSyncedTimestamp = now;
+                state.updatedAt = now;
+
+                const payload = {
+                    items: state.items,
+                    themes: state.themes,
+                    bulletin: state.bulletin,
+                    heroImg: localStorage.getItem(HERO_IMG_KEY) || '',
+                    updatedAt: now
+                };
+
+                await setDoc(hubDocRef, payload, { merge: true });
+                updateSyncStatusUI('connected', '即時同步中');
+            } catch (e) {
+                console.warn("推送至雲端失敗:", e);
+                updateSyncStatusUI('error', '雲端保存失敗');
+            } finally {
+                isSyncingToCloud = false;
+            }
+        }
+
+        // 儲存並連線至自訂 Firebase 配置 (GitHub Pages 部署專用)
+        function saveAndConnectFirebase() {
+            const raw = document.getElementById('firebaseConfigInput').value.trim();
+            if (!raw) {
+                showToast('請輸入 Firebase Web SDK 設定內容', 'warning');
+                return;
+            }
+
+            try {
+                // 支援標準 JSON 與寬鬆 JS 物件字串解析
+                let parsed;
+                if (raw.startsWith('{')) {
+                    parsed = JSON.parse(raw.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": '));
+                } else {
+                    const clean = raw.substring(raw.indexOf('{'), raw.lastIndexOf('}') + 1);
+                    parsed = JSON.parse(clean.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": '));
+                }
+
+                if (!parsed.apiKey || !parsed.projectId) {
+                    throw new Error("設定缺少 apiKey 或 projectId");
+                }
+
+                localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(parsed));
+                showToast('Firebase 設定已儲存，正在啟動即時同步...', 'success');
+                initFirebaseSync();
+            } catch (err) {
+                showToast('設定格式無效，請確認為正確的 JSON 物件', 'error');
+            }
+        }
+
+        // 斷開並移除自訂 Firebase 設定
+        function disconnectFirebaseConfig() {
+            openCustomConfirm('清除雲端設定', '確定要清除 Firebase 連線設定嗎？網站將轉回本機獨立儲存模式。', (ok) => {
+                if (ok) {
+                    if (fbUnsubscribe) fbUnsubscribe();
+                    fbUnsubscribe = null;
+                    fbApp = null;
+                    fbAuth = null;
+                    fbDb = null;
+                    localStorage.removeItem(FIREBASE_CONFIG_KEY);
+                    document.getElementById('firebaseConfigInput').value = '';
+                    updateSyncStatusUI('offline', '本機模式');
+                    showToast('已切換為純本機模式', 'info');
+                }
+            });
+        }
 
         // 載入儲存資料
         function loadData() {
@@ -1097,6 +1430,16 @@
             updateStats();
             document.getElementById('bulletinText').textContent = state.bulletin;
             document.getElementById('adminBulletinInput').value = state.bulletin;
+
+            // 填入既有的 Firebase 配置至後台輸入框
+            const savedFb = localStorage.getItem(FIREBASE_CONFIG_KEY);
+            const configInput = document.getElementById('firebaseConfigInput');
+            if (configInput) {
+                configInput.value = savedFb || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
+            }
+
+            // 啟動 Firebase 雲端即時同步
+            initFirebaseSync();
         }
 
         // 渲染主圖周圍主題浮動徽章 (以正 n 邊形幾何定位，確保每個徽章最接近處與外圈軌道均恰好保持 1 個字元距離)
@@ -1240,17 +1583,20 @@
             if (heroImg) {
                 heroImg.src = 'FE07B33B-4011-4858-A850-4F0417FFFBE5.PNG';
             }
-            showToast('已重設為預設圖片', 'info');
+            showToast('已恢復為預設圖片', 'info');
         }
 
-        // 保存資料至 LocalStorage
+        // 保存資料至 LocalStorage 並同步至 Firebase
         function saveData() {
             try {
+                state.updatedAt = Date.now();
                 localStorage.setItem(STORAGE_KEY, JSON.stringify({
                     items: state.items,
                     bulletin: state.bulletin,
                     themes: state.themes
                 }));
+                // 同步觸發推送到 Firebase Firestore (若已連線)
+                pushStateToFirebase();
             } catch (e) {
                 showToast('無法儲存至本機快取', 'error');
             }
@@ -1379,8 +1725,14 @@
                             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                         </button>
                         
-                        <!-- Admin Edit/Delete Controls -->
+                        <!-- Admin Edit/Delete/Sort Controls -->
                         <div class="${state.isAdmin ? 'flex' : 'hidden'} items-center space-x-1">
+                            <button onclick="moveItem('${item.id}', -1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-300 flex items-center justify-center text-xs transition-colors" title="向前移動">
+                                <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                            </button>
+                            <button onclick="moveItem('${item.id}', 1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-300 flex items-center justify-center text-xs transition-colors" title="向後移動">
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </button>
                             <button onclick="openEditModal('${item.id}')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-300 flex items-center justify-center text-xs transition-colors" title="編輯">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
