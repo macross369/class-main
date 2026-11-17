@@ -116,7 +116,7 @@
         /* Ambient Lighting and Pulsing Orbits */
         @keyframes orbitFloat {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-8px) rotate(2deg); }
+            50% { transform: translateY(-6px) rotate(1.5deg); }
         }
         @keyframes pulseGlow {
             0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6)); }
@@ -155,9 +155,6 @@
         /* Holographic Text Outline */
         .holo-text-gold {
             text-shadow: 0 0 12px rgba(245, 158, 11, 0.8), 0 0 24px rgba(245, 158, 11, 0.4);
-        }
-        .holo-border {
-            border-image: linear-gradient(to bottom right, #FBBF24, rgba(245, 158, 11, 0.2), #60A5FA) 1;
         }
     </style>
 </head>
@@ -238,7 +235,7 @@
         </header>
 
         <!-- Hero Section: Featuring the Visual Character & Lumi Companion -->
-        <section class="relative py-8 md:py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <section class="relative py-8 md:py-12 px-4 sm:px-6 lg:px-8 overflow-visible">
             <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 
                 <!-- Left: Interactive Character Showcase & Hologram Portal -->
@@ -307,26 +304,26 @@
                             <span id="statTotalLinks">12 個整合平台</span>
                         </div>
                         <div class="flex items-center space-x-2 bg-slate-800/60 px-3 py-1.5 rounded-lg border border-slate-700">
-                            <i class="fa-solid fa-sparkles text-yellow-300"></i>
-                            <span>每日持續更新</span>
+                            <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i>
+                            <span>持續新增中</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Right: Visual Portrait Card with Floating Orbit Badges -->
-                <div class="lg:col-span-6 flex justify-center relative">
+                <div class="lg:col-span-6 flex justify-center relative py-10 sm:py-12">
                     <!-- Glow Container -->
-                    <div class="relative w-full max-w-lg aspect-square sm:aspect-[4/3] lg:aspect-square flex items-center justify-center">
+                    <div class="relative w-full max-w-lg aspect-square sm:aspect-[4/3] lg:aspect-square flex items-center justify-center overflow-visible">
                         
                         <!-- Golden Circular Hologram Orbit Track -->
-                        <div class="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full border border-dashed border-amber-400/30 animate-spin-slow pointer-events-none"></div>
-                        <div class="absolute w-60 h-60 sm:w-80 sm:h-80 rounded-full border border-sky-400/20 pointer-events-none"></div>
+                        <div id="heroOuterOrbitTrack" class="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full border border-dashed border-amber-400/35 animate-spin-slow pointer-events-none z-0"></div>
+                        <div class="absolute w-60 h-60 sm:w-80 sm:h-80 rounded-full border border-sky-400/20 pointer-events-none z-0"></div>
 
                         <!-- Main Character Display Frame (Portrait with Golden Halo) -->
-                        <div class="relative z-10 w-64 sm:w-80 rounded-3xl p-1 bg-gradient-to-b from-amber-400 via-amber-600/40 to-night-border shadow-2xl shadow-amber-500/25 group">
-                            <div class="relative w-full bg-gradient-to-b from-slate-900 via-night-800 to-night-900 rounded-[22px] overflow-hidden p-3 flex flex-col items-center">
+                        <div class="relative z-10 w-56 sm:w-72 rounded-3xl p-1 bg-gradient-to-b from-amber-400 via-amber-600/40 to-night-border shadow-2xl shadow-amber-500/25 group">
+                            <div class="relative w-full bg-gradient-to-b from-slate-900 via-night-800 to-night-900 rounded-[22px] overflow-hidden p-2.5 flex flex-col items-center">
                                 
-                                <!-- Visual Illustration Component (Actual 3D Chibi Teacher & Lumi Image) -->
+                                <!-- Visual Illustration Component -->
                                 <div class="relative w-full aspect-square rounded-2xl overflow-hidden border border-amber-400/30 bg-night-900 shadow-inner group-hover:border-amber-400/70 transition-all">
                                     <img 
                                         id="heroCharacterImg"
@@ -337,7 +334,7 @@
                                     >
                                     <div class="absolute inset-0 bg-gradient-to-t from-night-900/80 via-transparent to-transparent pointer-events-none"></div>
                                     
-                                    <!-- Image Change Floating Button (Accessible via hover or Admin mode) -->
+                                    <!-- Image Change Floating Button -->
                                     <div class="absolute bottom-2 right-2 flex items-center space-x-1.5 z-20">
                                         <label class="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-slate-900/85 hover:bg-amber-500 hover:text-slate-950 text-amber-300 text-[11px] font-semibold border border-amber-400/40 backdrop-blur-md cursor-pointer transition-all shadow-md active:scale-95" title="更換主視覺圖片">
                                             <i class="fa-solid fa-camera text-xs"></i>
@@ -349,7 +346,7 @@
                             </div>
                         </div>
 
-                        <!-- Floating Feature Orbs (Rendered dynamically) -->
+                        <!-- Floating Feature Orbs (Topmost layer z-30, outside orbit track, 1ch gap) -->
                         <div id="heroOrbitBadgesContainer" class="contents">
                             <!-- Populated dynamically via JS renderHeroOrbitBadges() -->
                         </div>
@@ -655,7 +652,7 @@
                             </div>
                         </div>
                     </div>
-                    <p class="text-[11px] text-slate-400">支援 JPG、PNG、WEBP 等格式，系統會自動優化並留存在您的瀏覽器中。</p>
+                    <p class="text-[11px] text-slate-400">支援 JPG、PNG、WEBP 等格式，系統會自動優化並同步保留於雲端與瀏覽器中。</p>
                 </div>
 
                 <!-- Quick Add Shortcut Banner -->
@@ -717,7 +714,7 @@
                         <span id="adminSyncStateBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700">未連線</span>
                     </div>
                     <p class="text-slate-400 text-[11px] mb-2 leading-relaxed">
-                        貼上您的 Firebase Web 應用程式 SDK 設定 JSON 物件，即可讓不同載具（手機、平板、電腦）即時同步網頁清單與自訂內容，輸入時亦絕不中斷打字。
+                        貼上您的 Firebase Web 應用程式 SDK 設定 JSON 物件，即可讓不同載具（手機、平板、電腦）即時同步網頁清單與自訂內容。更新 GitHub 網頁時，雲端資料皆獨立保存、絕不覆蓋。
                     </p>
                     <div class="space-y-2">
                         <textarea id="firebaseConfigInput" rows="3" placeholder='{"apiKey": "AIzaSy...", "authDomain": "...firebaseapp.com", "projectId": "...", ...}' class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-night-border text-slate-200 text-[11px] font-mono focus:outline-none focus:border-sky-400"></textarea>
@@ -749,7 +746,7 @@
                     <h4 class="font-bold text-slate-200 mb-2 text-sm">
                         <i class="fa-solid fa-database text-purple-400 mr-1.5"></i> 資料備份與還原 (JSON)
                     </h4>
-                    <p class="text-slate-400 mb-3">可將目前所有自訂的網頁配置導出為 JSON 備份，或在其他電腦匯入。</p>
+                    <p class="text-slate-400 mb-3">建議在重大改版前可先導出 JSON 雙重備份；一般更新 GitHub 網頁檔時，雲端資料庫會自動保留無須重匯。</p>
                     <div class="flex flex-wrap gap-2">
                         <button onclick="exportData()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium">
                             <i class="fa-solid fa-download mr-1"></i> 匯出設定檔
@@ -824,6 +821,7 @@
     <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
     <script>
+        // 固定儲存鍵值 (更新版本時維持相同鍵值，確保本機與雲端無縫銜接)
         const STORAGE_KEY = 'qianxian_class_hub_data_v1';
         const AUTH_STATE_KEY = 'qianxian_admin_logged_v1';
         const HERO_IMG_KEY = 'qianxian_hero_image_data_v1';
@@ -839,12 +837,13 @@
             appId: "1:560068246059:web:f372d7e5c755f02898886e"
         };
 
-        // Firebase 執行期狀態
+        // Firebase 執行期狀態與防覆蓋保護鎖
         let fbApp = null;
         let fbAuth = null;
         let fbDb = null;
         let fbUnsubscribe = null;
         let isSyncingToCloud = false;
+        let hasLoadedFromCloud = false; // 安全鎖：未讀取完雲端資料前，絕不覆蓋雲端
         let lastSyncedTimestamp = 0;
 
         // 8 種支援光澤色彩的視覺樣式定義
@@ -915,7 +914,7 @@
             }
         };
 
-        // 預設主題配置
+        // 預設主題配置 (僅於資料庫完全空白時作為初始種子)
         const DEFAULT_THEMES = [
             { id: 'guidance', name: '光之引導', subtitle: '行政常規指引', icon: 'fa-compass', themeColor: 'sky' },
             { id: 'transfer', name: '知識轉化', subtitle: '學科自主探索', icon: 'fa-book-bookmark', themeColor: 'gold' },
@@ -923,7 +922,7 @@
             { id: 'expression', name: '創意表達', subtitle: '成果分享親師', icon: 'fa-comments', themeColor: 'emerald' }
         ];
 
-        // 預設精選班級經營網頁 (完整宣告，修復 Unexpected token ':' 錯誤)
+        // 預設精選班級經營網頁 (僅於資料庫完全空白時作為初始種子)
         const DEFAULT_ITEMS = [
             {
                 id: 'item_1',
@@ -1094,6 +1093,7 @@
             items: [],
             themes: [...DEFAULT_THEMES],
             bulletin: '🌟 歡迎來到清閒小築！本週重點：數位學習歷程上傳、晨光閱讀星光分享會已啟動，請點選專區查看各項資訊。',
+            heroImg: '',
             selectedCategory: 'all',
             searchQuery: '',
             isAdmin: false,
@@ -1181,11 +1181,10 @@
                     return JSON.parse(localSaved);
                 } catch(e) {}
             }
-            // 預設直接採用專屬配置
             return DEFAULT_FIREBASE_CONFIG;
         }
 
-        // 初始化 Firebase Firestore 跨載具同步
+        // 初始化 Firebase Firestore 跨載具同步 (具備防覆蓋安全鎖)
         async function initFirebaseSync() {
             const config = getEffectiveFirebaseConfig();
             if (!config || !config.apiKey || !config.projectId) {
@@ -1196,7 +1195,6 @@
             try {
                 updateSyncStatusUI('syncing', '正在連線雲端...');
 
-                // 動態載入 Firebase Modular SDK (遵守 RULE 1, 2, 3)
                 const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
                 const { getAuth, signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
                 const { getFirestore, doc, setDoc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
@@ -1205,7 +1203,6 @@
                 fbAuth = getAuth(fbApp);
                 fbDb = getFirestore(fbApp);
 
-                // RULE 3: 必須先進行身份驗證再讀寫資料庫
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(fbAuth, __initial_auth_token);
                 } else {
@@ -1216,40 +1213,54 @@
                     throw new Error("認證未完成");
                 }
 
-                // RULE 1: 嚴格使用 /artifacts/{appId}/public/data/{collectionName}
+                // 固定資料庫路徑，確保更新 GitHub 網頁版本時永遠指向同一份雲端資料庫
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'qianxian-class-hub';
                 const hubDocRef = doc(fbDb, 'artifacts', appId, 'public', 'data', 'hubConfig', 'mainData');
 
-                // 移除舊的監聽器避免重複綁定
                 if (fbUnsubscribe) fbUnsubscribe();
 
-                // 監聽即時更新 (RULE 2: 簡單單文檔監聽，不使用任何複合查詢)
+                // 監聽雲端即時更新
                 fbUnsubscribe = onSnapshot(hubDocRef, (snap) => {
+                    // 解除寫入鎖定：確認已完成雲端狀態探測
+                    hasLoadedFromCloud = true;
+
                     if (!snap.exists()) {
-                        // 若雲端尚無資料，將當前本機資料推送至雲端種子
+                        // 僅在雲端資料庫「完全不存在（首次啟用）」時，才初始化種子資料
                         pushStateToFirebase(true);
                         updateSyncStatusUI('connected', '即時同步中');
                         return;
                     }
 
                     const remote = snap.data();
-                    if (!remote || !remote.updatedAt) return;
+                    if (!remote) return;
 
                     // 若剛由本機送出，略過重複回傳
-                    if (remote.updatedAt === lastSyncedTimestamp) {
+                    if (remote.updatedAt && remote.updatedAt === lastSyncedTimestamp) {
                         updateSyncStatusUI('connected', '即時同步中');
                         return;
                     }
 
-                    // 關鍵核心：若使用者當前正在輸入文字或編輯彈窗開啟中，絕不干擾輸入！
-                    if (isUserActivelyTyping()) {
-                        // 僅背景更新狀態物件與背景卡片，絕不覆寫作用中的輸入框或表單
-                        if (remote.items && Array.isArray(remote.items)) state.items = remote.items;
-                        if (remote.themes && Array.isArray(remote.themes)) state.themes = remote.themes;
-                        if (remote.bulletin) state.bulletin = remote.bulletin;
-                        state.updatedAt = remote.updatedAt;
+                    // 優先採用雲端既有的資料，絕不被本機預設值覆蓋
+                    if (remote.items && Array.isArray(remote.items)) state.items = remote.items;
+                    if (remote.themes && Array.isArray(remote.themes) && remote.themes.length > 0) state.themes = remote.themes;
+                    if (remote.bulletin) state.bulletin = remote.bulletin;
+                    if (typeof remote.heroImg === 'string' && remote.heroImg.length > 0) {
+                        state.heroImg = remote.heroImg;
+                        try { localStorage.setItem(HERO_IMG_KEY, remote.heroImg); } catch(e) {}
+                    }
+                    if (remote.updatedAt) state.updatedAt = remote.updatedAt;
 
-                        // 平滑更新背景卡片與主題，不影響目前聚焦的輸入游標
+                    // 同步回寫至本機快取
+                    try {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                            items: state.items,
+                            themes: state.themes,
+                            bulletin: state.bulletin
+                        }));
+                    } catch(e) {}
+
+                    // 若使用者當前正在輸入文字或編輯彈窗開啟中，僅更新背景畫面，絕不干擾打字游標！
+                    if (isUserActivelyTyping()) {
                         renderWebCards();
                         renderHeroOrbitBadges();
                         updateStats();
@@ -1257,29 +1268,17 @@
                         return;
                     }
 
-                    // 當使用者無活動輸入時，進行完整更新
-                    if (remote.items && Array.isArray(remote.items)) state.items = remote.items;
-                    if (remote.themes && Array.isArray(remote.themes)) state.themes = remote.themes;
-                    if (remote.bulletin) {
-                        state.bulletin = remote.bulletin;
-                        document.getElementById('bulletinText').textContent = state.bulletin;
-                        const adminBul = document.getElementById('adminBulletinInput');
-                        if (adminBul) adminBul.value = state.bulletin;
-                    }
-                    if (remote.heroImg) {
-                        const heroImg = document.getElementById('heroCharacterImg');
-                        if (heroImg && heroImg.src !== remote.heroImg) {
-                            heroImg.src = remote.heroImg;
-                            localStorage.setItem(HERO_IMG_KEY, remote.heroImg);
+                    // 完整刷新介面
+                    document.getElementById('bulletinText').textContent = state.bulletin;
+                    const adminBul = document.getElementById('adminBulletinInput');
+                    if (adminBul) adminBul.value = state.bulletin;
+
+                    if (state.heroImg) {
+                        const heroImgEl = document.getElementById('heroCharacterImg');
+                        if (heroImgEl && heroImgEl.src !== state.heroImg) {
+                            heroImgEl.src = state.heroImg;
                         }
                     }
-
-                    state.updatedAt = remote.updatedAt;
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        items: state.items,
-                        themes: state.themes,
-                        bulletin: state.bulletin
-                    }));
 
                     renderCategoryFilters();
                     renderWebCards();
@@ -1300,9 +1299,11 @@
             }
         }
 
-        // 推送狀態至 Firebase Firestore
+        // 推送狀態至 Firebase Firestore (受 hasLoadedFromCloud 安全鎖保護)
         async function pushStateToFirebase(force = false) {
             if (!fbDb || !fbAuth || !fbAuth.currentUser) return;
+            // 安全鎖：若尚未從雲端完成首次讀取，禁止主動覆寫雲端資料
+            if (!hasLoadedFromCloud && !force) return;
             if (isSyncingToCloud && !force) return;
 
             try {
@@ -1319,7 +1320,7 @@
                     items: state.items,
                     themes: state.themes,
                     bulletin: state.bulletin,
-                    heroImg: localStorage.getItem(HERO_IMG_KEY) || '',
+                    heroImg: state.heroImg || localStorage.getItem(HERO_IMG_KEY) || '',
                     updatedAt: now
                 };
 
@@ -1333,7 +1334,7 @@
             }
         }
 
-        // 儲存並連線至自訂 Firebase 配置 (GitHub Pages 部署專用)
+        // 儲存並連線至自訂 Firebase 配置
         function saveAndConnectFirebase() {
             const raw = document.getElementById('firebaseConfigInput').value.trim();
             if (!raw) {
@@ -1342,7 +1343,6 @@
             }
 
             try {
-                // 支援標準 JSON 與寬鬆 JS 物件字串解析
                 let parsed;
                 if (raw.startsWith('{')) {
                     parsed = JSON.parse(raw.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": '));
@@ -1355,6 +1355,7 @@
                     throw new Error("設定缺少 apiKey 或 projectId");
                 }
 
+                hasLoadedFromCloud = false;
                 localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(parsed));
                 showToast('Firebase 設定已儲存，正在啟動即時同步...', 'success');
                 initFirebaseSync();
@@ -1372,6 +1373,7 @@
                     fbApp = null;
                     fbAuth = null;
                     fbDb = null;
+                    hasLoadedFromCloud = false;
                     localStorage.removeItem(FIREBASE_CONFIG_KEY);
                     document.getElementById('firebaseConfigInput').value = '';
                     updateSyncStatusUI('offline', '本機模式');
@@ -1380,7 +1382,7 @@
             });
         }
 
-        // 載入儲存資料
+        // 載入儲存資料 (純讀取，不觸發自動覆寫雲端)
         function loadData() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
@@ -1390,17 +1392,6 @@
                     if (parsed.bulletin) state.bulletin = parsed.bulletin;
                     if (parsed.themes && Array.isArray(parsed.themes) && parsed.themes.length > 0) {
                         state.themes = parsed.themes;
-                        // 若靈感生成尚未套用粉紅色系，自動同步更新
-                        const insp = state.themes.find(t => t.id === 'inspiration');
-                        if (insp && (insp.themeColor === 'gold' || !insp.themeColor)) {
-                            insp.themeColor = 'pink';
-                        }
-                        // 若創意表達仍為舊版紫色系，立即校正為翠綠色系
-                        const expr = state.themes.find(t => t.id === 'expression');
-                        if (expr && (expr.themeColor === 'purple' || !expr.themeColor)) {
-                            expr.themeColor = 'emerald';
-                        }
-                        saveData();
                     } else {
                         state.themes = [...DEFAULT_THEMES];
                     }
@@ -1417,6 +1408,7 @@
             // 載入自訂主視覺圖片 (如有)
             const savedHero = localStorage.getItem(HERO_IMG_KEY);
             if (savedHero) {
+                state.heroImg = savedHero;
                 const imgEl = document.getElementById('heroCharacterImg');
                 if (imgEl) imgEl.src = savedHero;
             }
@@ -1438,11 +1430,11 @@
                 configInput.value = savedFb || JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
             }
 
-            // 啟動 Firebase 雲端即時同步
+            // 啟動 Firebase 雲端即時同步 (優先拉取雲端最新資料)
             initFirebaseSync();
         }
 
-        // 渲染主圖周圍主題浮動徽章 (以正 n 邊形幾何定位，確保每個徽章最接近處與外圈軌道均恰好保持 1 個字元距離)
+        // 渲染主圖周圍主題浮動徽章
         function renderHeroOrbitBadges() {
             const container = document.getElementById('heroOrbitBadgesContainer');
             if (!container) return;
@@ -1452,7 +1444,6 @@
             const n = themes.length;
             if (n === 0) return;
 
-            // 取得外圈圓形軌道的實際即時半徑 R
             const orbitEl = document.getElementById('heroOuterOrbitTrack');
             let R = 192;
             if (orbitEl && orbitEl.offsetWidth > 0) {
@@ -1461,10 +1452,7 @@
                 R = window.innerWidth >= 640 ? 192 : 144;
             }
 
-            // 1 個字元的距離 (約 1ch，在 12-14px 系統字體下精準為 13px)
             const oneCharDistance = 13;
-
-            // 正 n 邊形起始角度：當 n=4 時自 -45度(右上)開始對稱分布於四象限，其餘自正上方 -90度開始均勻分布
             const startAngle = (n === 4) ? (-Math.PI / 4) : (-Math.PI / 2);
 
             themes.forEach((theme, idx) => {
@@ -1476,7 +1464,6 @@
                 const delay = (idx * -0.6).toFixed(1) + 's';
 
                 const orbDiv = document.createElement('div');
-                // 圖層設定於最頂層 (z-30)，滑鼠懸停時提升至 z-40，不遮擋中央人物卡片
                 orbDiv.className = 'absolute z-30 pointer-events-auto transition-all duration-300 select-none';
 
                 orbDiv.innerHTML = `
@@ -1494,18 +1481,13 @@
                 `;
                 container.appendChild(orbDiv);
 
-                // 即時取得徽章的實際寬度 W 與高度 H
                 const W = orbDiv.offsetWidth || (window.innerWidth >= 640 ? 120 : 105);
                 const H = orbDiv.offsetHeight || 44;
 
-                // 計算射線方向上，由徽章幾何中心至最靠近軌道邊緣點的半徑投影長度 t
                 const absCos = Math.max(0.0001, Math.abs(cosA));
                 const absSin = Math.max(0.0001, Math.abs(sinA));
                 const t = Math.min((W / 2) / absCos, (H / 2) / absSin);
 
-                // 核心數學公式：
-                // 徽章中心距離 = 軌道半徑 R + 1 個字元的間距 (oneCharDistance) + 邊界至中心的距離 t
-                // 如此一來，徽章最接近軌道外緣的點，與外圈軌道距離恆等於 1 個字元 (1ch)！
                 const D = R + oneCharDistance + t;
                 const posX = D * cosA;
                 const posY = D * sinA;
@@ -1516,7 +1498,7 @@
             });
         }
 
-        // 上傳/更換主圖 (含自動尺寸壓縮以確保能順暢存入 localStorage)
+        // 上傳/更換主圖 (含自動尺寸壓縮並同步儲存)
         function uploadHeroImage(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1526,7 +1508,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const maxDim = 800;
+                    const maxDim = 650;
                     let width = img.width;
                     let height = img.height;
 
@@ -1545,14 +1527,16 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    const compressed = canvas.toDataURL('image/jpeg', 0.85);
+                    const compressed = canvas.toDataURL('image/jpeg', 0.8);
                     try {
+                        state.heroImg = compressed;
                         localStorage.setItem(HERO_IMG_KEY, compressed);
                         const heroImg = document.getElementById('heroCharacterImg');
                         if (heroImg) heroImg.src = compressed;
-                        showToast('主視覺圖片已成功更換！', 'success');
+                        pushStateToFirebase();
+                        showToast('主視覺圖片已成功更換並同步！', 'success');
                     } catch (err) {
-                        showToast('圖片檔案過大，無法儲存至本機快取', 'error');
+                        showToast('圖片檔案過大，無法儲存至快取', 'error');
                     }
                 };
                 img.src = e.target.result;
@@ -1567,22 +1551,26 @@
                 showToast('請輸入有效的圖片網址', 'warning');
                 return;
             }
+            state.heroImg = url;
             const heroImg = document.getElementById('heroCharacterImg');
             if (heroImg) heroImg.src = url;
             try {
                 localStorage.setItem(HERO_IMG_KEY, url);
-                showToast('已套用新圖片網址！', 'success');
+                pushStateToFirebase();
+                showToast('已套用並同步新圖片網址！', 'success');
             } catch (e) {
                 showToast('無法儲存圖片網址', 'error');
             }
         }
 
         function resetHeroImage() {
+            state.heroImg = '';
             localStorage.removeItem(HERO_IMG_KEY);
             const heroImg = document.getElementById('heroCharacterImg');
             if (heroImg) {
                 heroImg.src = 'FE07B33B-4011-4858-A850-4F0417FFFBE5.PNG';
             }
+            pushStateToFirebase();
             showToast('已恢復為預設圖片', 'info');
         }
 
@@ -1595,7 +1583,6 @@
                     bulletin: state.bulletin,
                     themes: state.themes
                 }));
-                // 同步觸發推送到 Firebase Firestore (若已連線)
                 pushStateToFirebase();
             } catch (e) {
                 showToast('無法儲存至本機快取', 'error');
@@ -1902,7 +1889,7 @@
             setTimeout(() => modal.classList.remove('opacity-0'), 10);
         }
 
-        // 渲染管理後台中的主題編輯介面 (支援增刪與 8 款光澤)
+        // 渲染管理後台中的主題編輯介面
         function renderAdminThemesList() {
             const container = document.getElementById('adminThemesConfigContainer');
             if (!container) return;
@@ -1985,7 +1972,6 @@
             openCustomConfirm('刪除主題', `確定要刪除主題「${targetTheme ? targetTheme.name : ''}」嗎？`, (ok) => {
                 if (ok) {
                     state.themes = state.themes.filter(t => t.id !== themeId);
-                    // 同步關聯的網頁項目分類，避免分類遺失
                     state.items.forEach(item => {
                         if (item.category === themeId) {
                             item.category = state.themes[0].id;
@@ -2062,7 +2048,6 @@
             const currentItem = filtered[currentIndex];
             const targetItem = filtered[targetIndex];
 
-            // 在全局清單中交換兩者的位置
             const idxA = state.items.findIndex(i => i.id === currentItem.id);
             const idxB = state.items.findIndex(i => i.id === targetItem.id);
 
